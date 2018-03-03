@@ -7,7 +7,6 @@ import { Loader } from '../components';
 import { Helmet } from 'react-helmet';
 import { OPEN_PAGES } from '../constants';
 import { TabBar } from 'antd-mobile';
-import styles from './app.less';
 
 const App = ({ children, dispatch, app, loading, location }) => {
     

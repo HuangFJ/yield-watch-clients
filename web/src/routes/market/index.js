@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './index.less';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 

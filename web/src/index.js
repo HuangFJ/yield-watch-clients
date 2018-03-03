@@ -1,6 +1,5 @@
 import dva from 'dva';
 import './index.css';
-import { Toast } from 'antd-mobile';
 import createLoading from 'dva-loading';
 import createHistory from 'history/createBrowserHistory';
 
@@ -8,7 +7,7 @@ import createHistory from 'history/createBrowserHistory';
 const app = dva({
     history: createHistory(),
     onError(error, dispatch) {
-        Toast.fail(error.message);
+        console.log(`Oops! ${error.message}`);
     },
 });
 

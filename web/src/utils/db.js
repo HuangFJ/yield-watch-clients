@@ -86,7 +86,7 @@ class Database {
     _initDB(event) {
         const conn = event.target.result;
         const oldVersion = event.oldVersion;
-        console.log(conn.objectStoreNames);
+        console.log(`IndexedDB Object Stores: ${conn.objectStoreNames}`);
         for (const [tableName, store] of this._stores) {
             if (oldVersion !== 0 && conn.objectStoreNames.contains(tableName)) {
                 conn.deleteObjectStore(tableName);

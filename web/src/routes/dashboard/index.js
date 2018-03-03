@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
-import styles from './index.less';
 import { CoinList, ValueChart } from './components';
 import { List, Flex } from 'antd-mobile';
 import { VictoryPie, VictoryLabel } from 'victory';

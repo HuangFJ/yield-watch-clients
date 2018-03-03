@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'dva';
-import { List, InputItem, Button, Flex } from 'antd-mobile';
+import { List, InputItem, Button, Flex, Toast } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import { PropTypes } from 'prop-types';
-import styles from './index.less';
 import { CountdownButton } from './components';
+import { Helmet } from 'react-helmet';
 
 const Login = ({
     login,
@@ -15,58 +15,98 @@ const Login = ({
         validateFields,
     },
 }) => {
-    const handleSms = () => validateFields((errors, values) => {
-        if (errors) return;
-        const { strMobile } = values;
-        const mobile = strMobile.replace(/ /g, '');
-        dispatch({
-            type: 'login/sms',
-            payload: { mobile },
-        });
-    });
 
-    const handleSubmit = () => validateFields((errors, values) => {
-        if (errors) return;
-        const { strMobile, strCode } = values;
-        const mobile = strMobile.replace(/ /g, '');
-        const code = parseInt(strCode, 10);
-        dispatch({
-            type: 'login/smsAuth',
-            payload: { mobile, code },
-        });
-    });
-
-    const handleChange = () => validateFields((errors, values) => {
-        let disabled = true;
-        if (!errors) {
-            const { strMobile } = values;
-            if (/\d{3} \d{4} \d{4}/g.test(strMobile) && login.countdown) {
-                disabled = false;
-            }
-        }
+    const handleError = (err) => {
+        err && Toast.fail(err.message);
         dispatch({
             type: 'login/updateState',
-            payload: { disabled },
+            payload: { disabled: true },
         });
+    };
+
+    const requireAndValidMobile = async (strMobile) => {
+        let err;
+        if (!strMobile) err = '手机号必填。';
+        else if (!/\d{3} \d{4} \d{4}/g.test(strMobile)) err = '手机号格式错误。';
+
+        return err ? Promise.reject({ message: err }) : strMobile.replace(/ /g, '');
+    };
+
+    const requireAndValidCode = async (strCode) => {
+        let err;
+        if (!strCode) err = '验证码必填。';
+        else if (!/\d{4}/g.test(strCode)) err = '验证码格式错误。';
+
+        return err ? Promise.reject({ message: err }) : parseInt(strCode, 10);
+    };
+
+    const handleSms = () => validateFields((_, values) => {
+        const { strMobile } = values;
+        requireAndValidMobile(strMobile)
+            .then(mobile =>
+                dispatch({
+                    type: 'login/sms',
+                    payload: { mobile },
+                })
+            )
+            .catch(handleError);
     });
+
+    const handleLogin = () => validateFields((_, values) => {
+        const { strMobile, strCode } = values;
+        requireAndValidMobile(strMobile)
+            .then(mobile => requireAndValidCode(strCode)
+                .then(code => Promise.resolve({ mobile, code })))
+            .then(({ mobile, code }) => {
+                dispatch({
+                    type: 'login/smsAuth',
+                    payload: { mobile, code },
+                })
+            })
+            .catch(handleError);
+    });
+
+    const handleMobileChange = (strMobile) => {
+        requireAndValidMobile(strMobile)
+            .then(_ => {
+                if (!login.countdown) return Promise.reject();
+                dispatch({
+                    type: 'login/updateState',
+                    payload: { disabled: false },
+                });
+            })
+            .catch(_ => handleError())
+    };
+
+    const handleCodeChange = (strCode) => {
+        requireAndValidCode(strCode)
+            .then(_ => {
+                if (!login.countdown) return Promise.reject();
+                dispatch({
+                    type: 'login/updateState',
+                    payload: { disabled: false },
+                });
+            })
+            .catch(_ => handleError())
+    };
 
     return (
         <div>
+            <Helmet>
+                <title>You need login!</title>
+            </Helmet>
             <List>
                 <List.Item>
-                    {getFieldDecorator('strMobile', {
-                        rules: [
-                            {
-                                required: true,
-                                message: '手机号必填',
-                            },
-                        ],
-                    })(<InputItem type="phone" placeholder="请输入手机号码" />)}
+                    {getFieldDecorator('strMobile')(
+                        <InputItem type="phone" onChange={handleMobileChange} placeholder="手机号码" />
+                    )}
                 </List.Item>
                 <List.Item>
                     <Flex>
                         <Flex.Item>
-                            {getFieldDecorator('strCode')(<InputItem type="number" onChange={handleChange} placeholder="请输入验证码" />)}
+                            {getFieldDecorator('strCode')(
+                                <InputItem type="number" onChange={handleCodeChange} placeholder="验证码" />
+                            )}
                         </Flex.Item>
                         <Flex.Item>
                             <CountdownButton type="primary" size="small" label="发送验证码" interval={login.interval}
@@ -76,7 +116,7 @@ const Login = ({
 
                 </List.Item>
                 <List.Item>
-                    <Button disabled={login.disabled} type="primary" onClick={handleSubmit} loading={loading.effects['login/smsAuth']}>
+                    <Button disabled={login.disabled} type="primary" onClick={handleLogin} loading={loading.effects['login/smsAuth']}>
                         登录
                     </Button>
                 </List.Item>

@@ -3,7 +3,7 @@
 import queryString from 'query-string';
 import { me, unauth } from '../services/api';
 import { routerRedux } from 'dva/router';
-import { Unauthorized, UserNotFound } from '../utils/error';
+import { UserNotFound } from '../utils/error';
 
 export default {
 
@@ -41,20 +41,17 @@ export default {
             const ret = yield call(me);
             const { refererPathname } = yield select(_ => _.app);
             if (ret.err) {
-                console.log(ret.err);
-                if (ret.err instanceof Unauthorized) {
+                if (ret.err instanceof UserNotFound) {
+                    yield put(routerRedux.push({
+                        pathname: '/register',
+                    }));
+                } else {
                     yield put(routerRedux.push({
                         pathname: '/login',
                         search: queryString.stringify({
                             from: refererPathname,
                         }),
                     }));
-                } else if (ret.err instanceof UserNotFound) {
-                    yield put(routerRedux.push({
-                        pathname: '/register',
-                    }));
-                } else {
-                    throw ret.err;
                 }
             } else {
                 const user = ret.data;

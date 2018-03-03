@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import { InputItem, Button } from 'antd-mobile';
 import { createForm } from 'rc-form';
+import { Helmet } from 'react-helmet';
 
 const Register = ({
     register,
@@ -28,14 +29,17 @@ const Register = ({
     let errors;
     return (
         <div>
+            <Helmet>
+                <title>You need register!</title>
+            </Helmet>
             {getFieldDecorator('strName', {
                 rules: [
                     { 
                         required: true,
-                        message: '姓名为必填项'
+                        message: '姓名必填。'
                     },
                 ],
-            })(<InputItem placeholder="请输入您的姓名" />)}
+            })(<InputItem placeholder="姓名" />)}
             {(errors = getFieldError('strName')) ? errors.join(',') : null}
             <Button type="primary" onClick={handleSubmit} loading={loading.effects['register/submit']}>
                 注册
