@@ -12,6 +12,7 @@ import styles from './ValueChart.less';
 import { timeFormat } from 'd3-time-format';
 import AreaClipContainer from './AreaClipContainer';
 import { VictoryArea, VictoryAxis } from 'victory';
+import { Motion, spring } from 'react-motion';
 
 const _ValueChart = ({
     dataValue = [],
@@ -115,55 +116,66 @@ _ValueChart.propTypes = {
     height: PropTypes.number,
 }
 
-const ValueChart = ({ dataValue = [], dataInvest }) => {
-    if(!dataValue.length) return (
-        <svg style={styles.parent} viewBox="0 0 450 350">
-        
-        </svg>
-    );
+class ValueChart extends React.Component {
+    componentDidMount() {
+        console.log('chart ok');
+    }
+    render() {
+        const { dataValue = [], dataInvest } = this.props;
 
-    const xDomain = extent(dataValue, datum => datum[0]);
-    const yDomain = extent(dataValue, datum => datum[1]);
+        if (!dataValue.length) return (
+            <svg style={styles.parent} viewBox="0 0 450 350">
 
-    return (
-        <svg style={styles.parent} viewBox="0 0 450 350">
-            <g>
-                <VictoryAxis
-                    scale={{ x: "time" }}
-                    domain={xDomain}
-                    standalone={false}
-                    tickFormat={x => {
-                        return timeFormat("%Y/%m/%d")(x);
-                    }}
-                    style={{
-                        grid: {stroke: (t) => "grey"},
-                        axis: {strokeWidth:0},
-                        tickLabels:{angle:45, padding:20},
-                    }}
-                />
-                <VictoryAxis dependentAxis
-                    domain={yDomain}
-                    orientation="left"
-                    standalone={false}
-                    tickFormat={y => {
-                        return `${Math.floor(y / 10000)}万`;
-                    }}
-                    style={{
-                        axis: {strokeWidth:0},
-                    }}
-                />
-                <VictoryArea
-                    style={{ data: { 'fill': '#ffde28' } }}
-                    groupComponent={<AreaClipContainer data={dataInvest} />}
-                    data={dataValue}
-                    x={0}
-                    y={1}
-                    scale={{ x: "time", y: "linear" }}
-                    standalone={false}
-                />
-            </g>
-        </svg>
-    )
+            </svg>
+        );
+
+        const xDomain = extent(dataValue, datum => datum[0]);
+        const yDomain = extent(dataValue, datum => datum[1]);
+
+        return (
+            <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1) }}>
+                {value =>
+                    <svg style={{ opacity: value.opacity }} viewBox="0 0 450 350">
+                        <g>
+                            <VictoryAxis
+                                scale={{ x: "time" }}
+                                domain={xDomain}
+                                standalone={false}
+                                tickFormat={x => {
+                                    return timeFormat("%Y/%m/%d")(x);
+                                }}
+                                style={{
+                                    grid: { stroke: (t) => "grey" },
+                                    axis: { strokeWidth: 0 },
+                                    tickLabels: { angle: 45, padding: 20 },
+                                }}
+                            />
+                            <VictoryAxis dependentAxis
+                                domain={yDomain}
+                                orientation="left"
+                                standalone={false}
+                                tickFormat={y => {
+                                    return `${Math.floor(y / 10000)}万`;
+                                }}
+                                style={{
+                                    axis: { strokeWidth: 0 },
+                                }}
+                            />
+                            <VictoryArea
+                                style={{ data: { 'fill': '#ffde28' } }}
+                                groupComponent={<AreaClipContainer data={dataInvest} />}
+                                data={dataValue}
+                                x={0}
+                                y={1}
+                                scale={{ x: "time", y: "linear" }}
+                                standalone={false}
+                            />
+                        </g>
+                    </svg>
+                }
+            </Motion>
+        )
+    }
 }
 
 ValueChart.propTypes = {

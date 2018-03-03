@@ -37,14 +37,14 @@ const App = ({ children, dispatch, app, loading, location }) => {
                         icon={<div style={{
                             width: '22px',
                             height: '22px',
-                            background: 'url(https://zos.alipayobjects.com/rmsportal/sifuoDUQdAFKAVcFGROC.svg) center center /  21px 21px no-repeat'
+                            background: 'url(https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png) center center /  21px 21px no-repeat'
                         }}
                         />
                         }
                         selectedIcon={<div style={{
                             width: '22px',
                             height: '22px',
-                            background: 'url(https://zos.alipayobjects.com/rmsportal/iSrlOTqrKddqbOmlvUfq.svg) center center /  21px 21px no-repeat'
+                            background: 'url(https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png) center center /  21px 21px no-repeat'
                         }}
                         />
                         }
@@ -60,14 +60,14 @@ const App = ({ children, dispatch, app, loading, location }) => {
                         icon={<div style={{
                             width: '22px',
                             height: '22px',
-                            background: 'url(https://zos.alipayobjects.com/rmsportal/sifuoDUQdAFKAVcFGROC.svg) center center /  21px 21px no-repeat'
+                            background: 'url(https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png) center center /  21px 21px no-repeat'
                         }}
                         />
                         }
                         selectedIcon={<div style={{
                             width: '22px',
                             height: '22px',
-                            background: 'url(https://zos.alipayobjects.com/rmsportal/iSrlOTqrKddqbOmlvUfq.svg) center center /  21px 21px no-repeat'
+                            background: 'url(https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png) center center /  21px 21px no-repeat'
                         }}
                         />
                         }
