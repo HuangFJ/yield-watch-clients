@@ -3,13 +3,6 @@ import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import { CoinList, ValueChart } from './components';
 import { List, Flex } from 'antd-mobile';
-import { VictoryPie, VictoryLabel } from 'victory';
-
-const Label = props => {
-    return (
-        <VictoryLabel {...props} />
-    )
-}
 
 const Dashboard = ({ dashboard, loading }) => {
     return (
@@ -28,12 +21,12 @@ const Dashboard = ({ dashboard, loading }) => {
             </List>
             <List renderHeader={() => '资产市值变化'}>
                 <List.Item>
-                    <ValueChart dataValue={dashboard.values} />
+                    <ValueChart dataValue={dashboard.values} dataInvest={dashboard.invest} />
                 </List.Item>
             </List>
             <List renderHeader={() => '资产结构'}>
                 <List.Item>
-                    <VictoryPie
+                    {/* <VictoryPie
                         colorScale="cool"
                         cornerRadius={25}
                         labelRadius={90}
@@ -41,7 +34,7 @@ const Dashboard = ({ dashboard, loading }) => {
                         data={dashboard.coinList}
                         x={datum => datum.coin.symbol}
                         y={datum => datum.value_cny}
-                    />
+                    /> */}
 
                 </List.Item>
             </List>

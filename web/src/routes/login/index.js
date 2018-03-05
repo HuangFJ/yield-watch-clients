@@ -34,10 +34,10 @@ const Login = ({
 
     const requireAndValidCode = async (strCode) => {
         let err;
-        if (!strCode) err = '验证码必填。';
-        else if (!/\d{4}/g.test(strCode)) err = '验证码格式错误。';
+        if (!strCode) err = '短信验证码必填。';
+        else if (!/\d{4}/g.test(strCode)) err = '短信验证码格式错误。';
 
-        return err ? Promise.reject({ message: err }) : parseInt(strCode, 10);
+        return err ? Promise.reject({ message: err }) : +strCode; //alias of parseInt
     };
 
     const handleSms = () => validateFields((_, values) => {
@@ -105,11 +105,11 @@ const Login = ({
                     <Flex>
                         <Flex.Item>
                             {getFieldDecorator('strCode')(
-                                <InputItem type="number" onChange={handleCodeChange} placeholder="验证码" />
+                                <InputItem type="number" onChange={handleCodeChange} placeholder="短信验证码" />
                             )}
                         </Flex.Item>
                         <Flex.Item>
-                            <CountdownButton type="primary" size="small" label="发送验证码" interval={login.interval}
+                            <CountdownButton type="primary" size="small" label="发送" interval={login.interval}
                                 onClick={handleSms} loading={loading.effects['login/sms']} />
                         </Flex.Item>
                     </Flex>

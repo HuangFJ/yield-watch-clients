@@ -1,9 +1,7 @@
 import CoinList from './CoinList';
-import ValueChart from './ValueChart';
-import AreaClipContainer from './AreaClipContainer';
+import ValueChart from './ValueChart_v3';
 
 export {
     CoinList,
     ValueChart,
-    AreaClipContainer,
 }

@@ -24,7 +24,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
         <div>
             <Loader fullScreen spinning={loading.effects['app/query']} />
             <Helmet>
-                <title>Welcome! {`app.user.name`}</title>
+                <title>{`Welcome! ${app.user.name}`}</title>
             </Helmet>
             <div style={{ position: 'fixed', height: '100%', width: '100%', top: 0 }}>
                 <TabBar

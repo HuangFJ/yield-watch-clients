@@ -1,20 +1,16 @@
 // http://formidable.com/open-source/victory/guides/custom-charts/
 // https://bl.ocks.org/mbostock/3894205
 // https://bl.ocks.org/herrstucki/27dc76b6f8411b4725bb
-
+// victory + d3 + react, more d3 style
+// yeah! it works
 import React from 'react';
 import { extent } from 'd3-array';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { area, curveBasis, curveStepAfter } from 'd3-shape';
 import { VictoryLine, VictoryTheme } from 'victory';
 import PropTypes from 'prop-types';
-import styles from './ValueChart.less';
-import { timeFormat } from 'd3-time-format';
-import AreaClipContainer from './AreaClipContainer';
-import { VictoryArea, VictoryAxis } from 'victory';
-import { Motion, spring } from 'react-motion';
 
-const _ValueChart = ({
+const ValueChart = ({
     dataValue = [],
     dataInvest = [],
     width = 600,
@@ -109,78 +105,11 @@ const _ValueChart = ({
     );
 };
 
-_ValueChart.propTypes = {
+ValueChart.propTypes = {
     dataValue: PropTypes.array,
     dataInvest: PropTypes.array,
     width: PropTypes.number,
     height: PropTypes.number,
-}
-
-class ValueChart extends React.Component {
-    componentDidMount() {
-        console.log('chart ok');
-    }
-    render() {
-        const { dataValue = [], dataInvest } = this.props;
-
-        if (!dataValue.length) return (
-            <svg style={styles.parent} viewBox="0 0 450 350">
-
-            </svg>
-        );
-
-        const xDomain = extent(dataValue, datum => datum[0]);
-        const yDomain = extent(dataValue, datum => datum[1]);
-
-        return (
-            <Motion defaultStyle={{ opacity: 0 }} style={{ opacity: spring(1) }}>
-                {value =>
-                    <svg style={{ opacity: value.opacity }} viewBox="0 0 450 350">
-                        <g>
-                            <VictoryAxis
-                                scale={{ x: "time" }}
-                                domain={xDomain}
-                                standalone={false}
-                                tickFormat={x => {
-                                    return timeFormat("%Y/%m/%d")(x);
-                                }}
-                                style={{
-                                    grid: { stroke: (t) => "grey" },
-                                    axis: { strokeWidth: 0 },
-                                    tickLabels: { angle: 45, padding: 20 },
-                                }}
-                            />
-                            <VictoryAxis dependentAxis
-                                domain={yDomain}
-                                orientation="left"
-                                standalone={false}
-                                tickFormat={y => {
-                                    return `${Math.floor(y / 10000)}万`;
-                                }}
-                                style={{
-                                    axis: { strokeWidth: 0 },
-                                }}
-                            />
-                            <VictoryArea
-                                style={{ data: { 'fill': '#ffde28' } }}
-                                groupComponent={<AreaClipContainer data={dataInvest} />}
-                                data={dataValue}
-                                x={0}
-                                y={1}
-                                scale={{ x: "time", y: "linear" }}
-                                standalone={false}
-                            />
-                        </g>
-                    </svg>
-                }
-            </Motion>
-        )
-    }
-}
-
-ValueChart.propTypes = {
-    dataValue: PropTypes.array,
-    dataInvest: PropTypes.array,
 }
 
 export default ValueChart;

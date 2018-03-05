@@ -9,8 +9,7 @@ export default {
         setup({ dispatch, history }) {
             history.listen(({ pathname }) => {
                 if (pathname === '/dashboard' || pathname === '/') {
-                    dispatch({ type: 'myCoins' });
-                    dispatch({ type: 'myValues' });
+                    dispatch({ type: 'query' });
                 }
             });
         },
@@ -22,42 +21,38 @@ export default {
         totalInvest: 0,
         coinList: [],
         values: [],
+        invest: [],
     },
 
     effects: {
 
-        *myCoins(_, { call, put, select }) {
-            const coinList = yield call(my_coins);
-            yield put({ type: 'updateCoins', payload: coinList });
-        },
-
-        *myValues(_, { call, put }) {
-            const data = yield call(my_values);
-            yield put({ type: 'updateValues', payload: data });
+        *query(_, { call, put }) {
+            const myCoins = yield call(my_coins);
+            const myValues = yield call(my_values);
+            console.log(myValues);
+            const coinList = myCoins.states;
+            const totalValue = coinList.reduce(
+                (accumulator, curVal) => accumulator + curVal.value_cny,
+                0
+            ).toFixed(2);
+            const values = myValues.map(datum => [datum[0] * 1000, datum[1]]);
+            yield put({
+                type: 'updateState', payload: {
+                    values,
+                    totalValue,
+                    coinList,
+                }
+            });
         },
 
     },
 
     reducers: {
 
-        updateCoins(state, { payload }) {
-            const coinList = payload.states;
-            const totalValue = coinList.reduce(
-                (accumulator, curVal) => accumulator + curVal.value_cny,
-                0
-            ).toFixed(2);
+        updateState(state, { payload }) {
             return {
                 ...state,
-                coinList,
-                totalValue,
-            }
-        },
-
-        updateValues(state, { payload }) {
-            const values = payload.map(datum => [datum[0] * 1000, datum[1]]);
-            return {
-                ...state,
-                values,
+                ...payload,
             }
         },
 
