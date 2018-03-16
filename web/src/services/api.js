@@ -53,6 +53,11 @@ export function my_values() {
     .catch(handleError);
 }
 
+export function coins() {
+  return request('/coins')
+    .catch(handleError);
+}
+
 export function coin({ id }) {
   return request(`/coins/${id}`)
     .catch(handleError);

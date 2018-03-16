@@ -11,6 +11,7 @@
 // remove victory, use d3 and more reactfied
 // but axis must use react `ref` to achieve dom,
 // but you should avoid using d3 append 
+// next version try react-faux-dom
 
 import React from 'react';
 import * as d3 from 'd3';
@@ -31,6 +32,10 @@ export default class ValueChart extends React.Component {
         super(props);
 
         this.state = {};
+    }
+
+    componentWillMount(){
+        this.updateD3(this.props);
     }
 
     componentDidMount() {
@@ -167,9 +172,9 @@ export default class ValueChart extends React.Component {
                             : null
                         }
                     </defs>
-                    <path style={{ 'fill': chroma('SeaGreen') }} clipPath="url(#potentialInvestSpace)" d={valueSpace(dataValue)} />
+                    <path style={{ 'fill': chroma('#71990f') }} clipPath="url(#potentialInvestSpace)" d={valueSpace(dataValue)} />
                     {dataInvest && dataInvest.length ?
-                        <path style={{ 'fill': chroma('IndianRed') }} clipPath="url(#potentialValueSpace)" d={investSpace(dataInvest)} />
+                        <path style={{ 'fill': chroma('#e20482') }} clipPath="url(#potentialValueSpace)" d={investSpace(dataInvest)} />
                         : null
                     }
 

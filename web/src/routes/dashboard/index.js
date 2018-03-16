@@ -1,12 +1,14 @@
 import React from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
-import { CoinList, ValueChart } from './components';
+import { CoinList, ValueChart, ValueDistribution } from './components';
 import { List, Flex } from 'antd-mobile';
+import { Loader } from '../../components';
 
 const Dashboard = ({ dashboard, loading }) => {
     return (
         <div>
+            <Loader fullScreen spinning={loading.effects['dashboard/query']} />
             <List renderHeader={() => '概览'} >
                 <List.Item>
                     <Flex>
@@ -26,16 +28,7 @@ const Dashboard = ({ dashboard, loading }) => {
             </List>
             <List renderHeader={() => '资产结构'}>
                 <List.Item>
-                    {/* <VictoryPie
-                        colorScale="cool"
-                        cornerRadius={25}
-                        labelRadius={90}
-                        labelComponent={<Label angle={45} />}
-                        data={dashboard.coinList}
-                        x={datum => datum.coin.symbol}
-                        y={datum => datum.value_cny}
-                    /> */}
-
+                    <ValueDistribution data={dashboard.coinList} />
                 </List.Item>
             </List>
             <List renderHeader={() => '资产列表'}>
