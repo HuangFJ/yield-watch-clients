@@ -4,22 +4,122 @@
 // https://codesandbox.io/s/JqYGAqlEJ
 // d3 text overlap
 // https://www.safaribooksonline.com/blog/2014/03/11/solving-d3-label-placement-constraint-relaxing/
+// https://www.visualcinnamon.com/2015/07/voronoi.html
+// https://walkingtree.tech/d3-quadrant-chart-collision-in-angular2-application/
 
 import React from 'react';
 import * as d3 from 'd3';
 import { array } from 'prop-types';
 import { withFauxDOM } from 'react-faux-dom'
-import 'd3-selection-multi';
 import './ValueDistribution.css';
+
+/**
+ * Copyright 2013-2016 HubSpotDev
+ * MIT Licensed
+ *
+ * https://github.com/HubSpot/humanize
+ */
+function compactInteger(input, decimals = 0) {
+    decimals = Math.max(decimals, 0);
+    const number = parseInt(input, 10);
+    const signString = number < 0 ? '-' : '';
+    const unsignedNumber = Math.abs(number);
+    const unsignedNumberString = String(unsignedNumber);
+    const numberLength = unsignedNumberString.length;
+    const numberLengths = [13, 10, 7, 4];
+    const bigNumPrefixes = ['T', 'B', 'M', 'k'];
+
+    // small numbers
+    if (unsignedNumber < 1000) {
+        return `${signString}${unsignedNumberString}`;
+    }
+
+    // really big numbers
+    if (numberLength > numberLengths[0] + 3) {
+        return number.toExponential(decimals).replace('e+', 'x10^');
+    }
+
+    // 999 < unsignedNumber < 999,999,999,999,999
+    let length;
+    for (let i = 0; i < numberLengths.length; i++) {
+        const _length = numberLengths[i];
+        if (numberLength >= _length) {
+            length = _length;
+            break;
+        }
+    }
+
+    const decimalIndex = numberLength - length + 1;
+    const unsignedNumberCharacterArray = unsignedNumberString.split('');
+
+    const wholePartArray = unsignedNumberCharacterArray.slice(0, decimalIndex);
+    const decimalPartArray = unsignedNumberCharacterArray.slice(decimalIndex, decimalIndex + decimals + 1);
+
+    const wholePart = wholePartArray.join('');
+
+    // pad decimalPart if necessary
+    let decimalPart = decimalPartArray.join('');
+    if (decimalPart.length < decimals) {
+        decimalPart += `${Array(decimals - decimalPart.length + 1).join('0')}`;
+    }
+
+    let output;
+    if (decimals === 0) {
+        output = `${signString}${wholePart}${bigNumPrefixes[numberLengths.indexOf(length)]}`;
+    } else {
+        const outputNumber = Number(`${wholePart}.${decimalPart}`).toFixed(decimals);
+        output = `${signString}${outputNumber}${bigNumPrefixes[numberLengths.indexOf(length)]}`;
+    }
+
+    return output;
+}
+
+function collide(arr) {
+    const alpha = 3;
+    const spacing = 12;
+    let again;
+
+    do {
+        again = false;
+        for (const i in arr) {
+            const a = arr[i];
+            for (const j in arr) {
+                const b = arr[j];
+                // a & b are the same element and don't collide.
+                if (i === j) continue;
+                // a & b are on opposite sides of the chart and
+                // don't collide
+                if (a.anchor !== b.anchor) continue;
+
+                // Now let's calculate the distance between
+                // these elements. 
+                const deltaY = a.y - b.y;
+
+                // Our spacing is greater than our specified spacing,
+                // so they don't collide.
+                if (Math.abs(deltaY) > spacing) continue;
+
+                // If the labels collide, we'll push each 
+                // of the two labels up and down a little bit.
+                again = true;
+                const sign = deltaY > 0 ? 1 : -1;
+                const adjust = sign * alpha;
+                a.y = a.y + adjust;
+                b.y = b.y - adjust;
+            }
+        }
+    } while (again);
+}
 
 class ValueDistribution extends React.Component {
 
+    // Store our chart dimensions
     cDim = {
         height: 500,
         width: 500,
-        innerRadius: 50,
-        outerRadius: 150,
-        labelRadius: 175
+        innerRadius: 60,
+        outerRadius: 120,
+        labelRadius: 150
     }
 
     static propTypes = {
@@ -27,43 +127,8 @@ class ValueDistribution extends React.Component {
     }
 
     componentDidMount() {
-        var faux = this.props.connectFauxDOM('div', 'chart');
-
-        var svg = d3.select(faux).append('svg');
-        var canvas = svg.append('g').attr('id', 'canvas')
-
-        // Store our chart dimensions
-        var cDim = this.cDim;
-
-        // Set the size of our SVG element
-        svg.attrs({
-            height: cDim.height,
-            width: cDim.width
-        });
-
-        // This translate property moves the origin of the group's coordinate
-        // space to the center of the SVG element, saving us translating every
-        // coordinate individually. 
-        canvas.attr("transform", "translate(" + (cDim.width / 2) + "," + (cDim.width / 2) + ")");
-
-        canvas.append('g').attr('id', 'art');
-        canvas.append('g').attr('id', 'labels');
-
-        this.props.drawFauxDOM()
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        // do not compare props.chart as it gets updated in updateD3()
-        if (this.props.data !== prevProps.data) {
-            this.updateD3()
-        }
-    }
-
-    updateD3() {
-        var data = this.props.data;
-
         // This will create a faux div and store its virtual DOM in state.chart
-        var faux = this.props.connectFauxDOM('div', 'chart');
+        const faux = this.props.connectFauxDOM('div', 'chart');
 
         /*
            D3 code below by Alan Smith, http://bl.ocks.org/alansmithy/e984477a741bc56db5a5
@@ -76,165 +141,147 @@ class ValueDistribution extends React.Component {
            6) move rejoining of data and chart updates to updateD3()
         */
 
-        var svg = d3.select(faux).select('svg');
-        var canvas = svg.select('#canvas')
+        // Set the size of our SVG element
+        const canvas = d3.select(faux)
+            .append('svg')
+            .attr('viewBox', `0 0 ${this.cDim.width} ${this.cDim.height}`)
+            .append('g')
+            .attr('id', 'canvas');
 
-        var art = canvas.select('#art');
-        var labels = canvas.select('#labels');
+        // This translate property moves the origin of the group's coordinate
+        // space to the center of the SVG element, saving us translating every
+        // coordinate individually. 
+        canvas.attr('transform', `translate(${this.cDim.width / 2},${this.cDim.width / 2})`);
 
+        this.art = canvas.append('g').attr('id', 'art');
+        this.labels = canvas.append('g').attr('id', 'labels');
+
+        this.updateD3();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // do not compare props.chart as it gets updated in updateD3()
+        if (this.props.data !== prevProps.data) {
+            this.updateD3();
+        }
+    }
+
+    updateD3() {
         // Create the pie layout function.
         // This function will add convenience
         // data to our existing data, like 
         // the start angle and end angle
         // for each data element.
-        var jhw_pie = d3.pie()
-        jhw_pie.value(function (d, i) {
+        const jhw_pie = d3.pie();
+        jhw_pie.value((d, i) => {
             // Tells the layout function what
             // property of our data object to
             // use as the value.
             return d.value_cny;
         });
 
-        var pied_data = jhw_pie(data);
+        const pied_data = jhw_pie(this.props.data);
 
         // The pied_arc function we make here will calculate the path
         // information for each wedge based on the data set. This is 
         // used in the "d" attribute.
-        var pied_arc = d3.arc()
-            .innerRadius(50)
-            .outerRadius(150);
+        const pied_arc = d3.arc()
+            .innerRadius(this.cDim.innerRadius)
+            .outerRadius(this.cDim.outerRadius);
 
         // This is an ordinal scale that returns 10 predefined colors.
-        // It is part of d3 core.
-        var pied_colors = d3.scaleOrdinal(d3.schemeCategory10);
+        const pied_colors = d3.scaleOrdinal(d3.schemeCategory20c);
 
         // Let's start drawing the arcs.
-        var enteringArcs = art.selectAll(".wedge").data(pied_data).enter();
-
+        const enteringArcs = this.art.selectAll(".wedge").data(pied_data).enter();
         enteringArcs.append("path")
             .attr("class", "wedge")
             .attr("d", pied_arc)
-            .style("fill", function (d, i) {
+            .style("fill", (d, i) => {
                 return pied_colors(i);
             });
 
-        // Now we'll draw our label lines, etc.
-        var enteringLabels = labels.selectAll(".label").data(pied_data).enter();
-        var labelGroups = enteringLabels.append("g").attr("class", "label");
-        labelGroups.append("circle").attrs({
-            x: 0,
-            y: 0,
-            r: 2,
-            fill: "#000",
-            transform: function (d, i) {
+        // Now we'll draw our label circles, lines and texts.
+        const enteringLabels = this.labels.selectAll(".label").data(pied_data).enter();
+        const labelGroups = enteringLabels.append("g").attr("class", "label");
+        labelGroups.append("circle")
+            .attr('class', "label-circle")
+            .attr('r', 2)
+            .attr('transform', (d, i) => {
                 return "translate(" + pied_arc.centroid(d) + ")";
-            },
-            'class': "label-circle"
-        });
-
-        var cDim = this.cDim;
-
-        // "When am I ever going to use this?" I said in 
-        // 10th grade trig.
-        var textLines = labelGroups.append("line").attrs({
-            x1: function (d, i) {
-                return pied_arc.centroid(d)[0];
-            },
-            y1: function (d, i) {
-                return pied_arc.centroid(d)[1];
-            },
-            x2: function (d, i) {
-                var centroid = pied_arc.centroid(d);
-                var midAngle = Math.atan2(centroid[1], centroid[0]);
-                var x = Math.cos(midAngle) * cDim.labelRadius;
-                return x;
-            },
-            y2: function (d, i) {
-                var centroid = pied_arc.centroid(d);
-                var midAngle = Math.atan2(centroid[1], centroid[0]);
-                var y = Math.sin(midAngle) * cDim.labelRadius;
-                return y;
-            },
-            'class': "label-line"
-        });
-
-        var textLabels = labelGroups.append("text").attrs({
-            x: function (d, i) {
-                var centroid = pied_arc.centroid(d);
-                var midAngle = Math.atan2(centroid[1], centroid[0]);
-                var x = Math.cos(midAngle) * cDim.labelRadius;
-                var sign = (x > 0) ? 1 : -1
-                var labelX = x + (5 * sign)
-                return labelX;
-            },
-            y: function (d, i) {
-                var centroid = pied_arc.centroid(d);
-                var midAngle = Math.atan2(centroid[1], centroid[0]);
-                var y = Math.sin(midAngle) * cDim.labelRadius;
-                return y;
-            },
-            'text-anchor': function (d, i) {
-                var centroid = pied_arc.centroid(d);
-                var midAngle = Math.atan2(centroid[1], centroid[0]);
-                var x = Math.cos(midAngle) * cDim.labelRadius;
-                return (x > 0) ? "start" : "end";
-            },
-            'class': 'label-text'
-        }).text(function (d) {
-            return d.data.coin.name
-        });
-
-        var alpha = 0.5;
-        var spacing = 12;
-
-        function relax() {
-            var again = false;
-            textLabels.each(function (d, i) {
-                var a = this;
-                var da = d3.select(a);
-                var y1 = da.attr("y");
-                textLabels.each(function (d, j) {
-                    var b = this;
-                    // a & b are the same element and don't collide.
-                    if (a === b) return;
-                    var db = d3.select(b);
-                    // a & b are on opposite sides of the chart and
-                    // don't collide
-                    if (da.attr("text-anchor") !== db.attr("text-anchor")) return;
-                    // Now let's calculate the distance between
-                    // these elements. 
-                    var y2 = db.attr("y");
-                    var deltaY = y1 - y2;
-
-                    // Our spacing is greater than our specified spacing,
-                    // so they don't collide.
-                    if (Math.abs(deltaY) > spacing) return;
-
-                    // If the labels collide, we'll push each 
-                    // of the two labels up and down a little bit.
-                    again = true;
-                    var sign = deltaY > 0 ? 1 : -1;
-                    var adjust = sign * alpha;
-                    da.attr("y", +y1 + adjust);
-                    db.attr("y", +y2 - adjust);
-                });
             });
-            // Adjust our line leaders here
-            // so that they follow the labels. 
-            if (again) {
-                var labelElements = textLabels.nodes();
-                textLines.attr("y2", function (d, i) {
-                    var labelForLine = d3.select(labelElements[i]);
-                    return labelForLine.attr("y");
+
+        const textLines = labelGroups.append("line")
+            .attr('class', 'label-line')
+            .attr('x1', (d, i) => {
+                return pied_arc.centroid(d)[0];
+            })
+            .attr('y1', (d, i) => {
+                return pied_arc.centroid(d)[1];
+            });
+
+        const labelRadius = this.cDim.labelRadius;
+        const labelSimulation = [];
+
+        const textLabels = labelGroups.append("text")
+            .attr('class', 'label-text')
+            .text((d, i) => {
+                const centroid = pied_arc.centroid(d);
+                const midAngle = Math.atan2(centroid[1], centroid[0]);
+                const x = Math.cos(midAngle) * labelRadius;
+                const y = Math.sin(midAngle) * labelRadius;
+
+                const anchor = (x > 0) ? "start" : "end";
+
+                labelSimulation.push({
+                    x,
+                    y,
+                    anchor,
                 });
 
-                relax();
-            }
-        }
+                // Label field of data.
+                return `${d.data.coin.symbol},${compactInteger(d.data.value_cny, 2)}`;
+            });
 
-        relax();
+        collide(labelSimulation);
+
+        textLabels
+            .attr('x', (d, i) => {
+                const x = labelSimulation[i].x;
+                return x + (x > 0 ? +5 : -5);
+            }).attr('y', (d, i) => {
+                return labelSimulation[i].y;
+            }).attr('text-anchor', (d, i) => {
+                return labelSimulation[i].anchor;
+            });
+
+        textLines
+            .attr('x2', (d, i) => {
+                return labelSimulation[i].x;
+            }).attr('y2', (d, i) => {
+                return labelSimulation[i].y;
+            });
 
         this.props.drawFauxDOM()
+
+        // const ticked = () => {
+        //     textLabels.attr("x", function (d, i) {
+        //         return label_array[i].x;
+        //     })
+        //         .attr("y", function (d, i) { return label_array[i].y; });
+        //     this.props.drawFauxDOM()
+        // }
+        // const repelForce = d3.forceManyBody().strength(-140).distanceMax(80).distanceMin(20);
+        // const attractForce = d3.forceManyBody().strength(100).distanceMax(100).distanceMin(100);
+        // const simulation = d3.forceSimulation(label_array)
+        //     .velocityDecay(0.5)
+        //     .force("attractForce", attractForce)
+        //     .force("repelForce", repelForce)
+        //     .force('collide', d3.forceCollide().radius(() => 30))
+        //     .on("tick", ticked)
+        //     .on('end', () => {
+        //     })
+
     }
 
     render() {
