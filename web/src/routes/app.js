@@ -1,5 +1,6 @@
 /* global window */
 import React from 'react';
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types';
 import { withRouter, routerRedux } from 'dva/router';
 import { connect } from 'dva';
@@ -9,7 +10,7 @@ import { OPEN_PAGES } from '../constants';
 import { TabBar } from 'antd-mobile';
 
 const App = ({ children, dispatch, app, loading, location }) => {
-    
+
     let { pathname } = location;
     pathname = pathname.startsWith('/') ? pathname : `/${pathname}`;
     if (OPEN_PAGES && OPEN_PAGES.includes(pathname)) {
@@ -49,7 +50,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
                         />
                         }
                         selected={pathname === '/dashboard'}
-                        onPress={()=>dispatch(routerRedux.push({
+                        onPress={() => dispatch(routerRedux.push({
                             pathname: '/dashboard'
                         }))}
                     >
@@ -72,9 +73,10 @@ const App = ({ children, dispatch, app, loading, location }) => {
                         />
                         }
                         selected={pathname === '/market'}
-                        onPress={()=>dispatch(routerRedux.push({
+                        onPress={() => dispatch(routerRedux.push({
                             pathname: '/market'
                         }))}
+                        ref={compo => app.marketScrollEl = ReactDOM.findDOMNode(compo)}
                     >
                         {children}
                     </TabBar.Item>

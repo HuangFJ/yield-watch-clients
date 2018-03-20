@@ -29,7 +29,6 @@ export default {
         *query(_, { call, put }) {
             const myCoins = yield call(my_coins);
             const myValues = yield call(my_values);
-            console.log(myCoins);
             const coinList = myCoins.states;
             const totalValue = coinList.reduce(
                 (accumulator, curVal) => accumulator + curVal.value_cny,
