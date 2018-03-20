@@ -1,5 +1,5 @@
 import fetch from 'dva/fetch';
-import { URL } from 'whatwg-url';
+import URL from 'url-parse';
 import { API_BASE_URL } from '../constants';
 import { AppError, Unauthorized, BadRequest, UserNotFound } from './error';
 
@@ -39,7 +39,7 @@ async function checkStatus(response) {
 export default function request(url, options = {}) {
   const accessToken = window.localStorage.getItem('access_token') || null;
   const urlObj = new URL(API_BASE_URL ? API_BASE_URL + url : url);
-  accessToken && urlObj.searchParams.set('access_token', accessToken);
+  accessToken && urlObj.set('query', {...urlObj.query, 'access_token': accessToken});
 
   const { json, headers = {}, ...opts } = options;
   if (json) {

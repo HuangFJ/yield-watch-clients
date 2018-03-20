@@ -25,7 +25,7 @@ const Market = ({ market, loading }) => {
             <ListItem key={key} className={className} style={style}
                 extra={`\$${row.price_usd}`}
                 align="top"
-                thumb="https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png" multipleLine>
+                thumb={`https://s2.coinmarketcap.com/static/img/coins/32x32/${row.no}.png`} multipleLine>
                 {row.name}
                 <ListItem.Brief>{row.volume_usd}</ListItem.Brief>
             </ListItem>
