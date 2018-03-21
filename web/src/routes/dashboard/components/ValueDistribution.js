@@ -54,8 +54,8 @@ class ValueDistribution extends React.Component {
 
     // Store our chart dimensions
     cDim = {
-        height: 500,
-        width: 500,
+        height: 350,
+        width: 450,
         innerRadius: 60,
         outerRadius: 120,
         labelRadius: 150

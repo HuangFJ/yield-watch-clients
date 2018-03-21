@@ -7,6 +7,7 @@ export default {
     state: {
         coins: [],
         scrollEl: null,
+        coinsRaw: [],
     },
 
     subscriptions: {
@@ -23,11 +24,12 @@ export default {
     effects: {
         *query(_, actions) {
             const { call, put, select } = actions;
-            const scrollEl = yield select(_=>_.app.marketScrollEl)
-            const coins = yield call(coins_api);
+            const scrollEl = yield select(_ => _.app.marketScrollEl)
+            const coinsRaw = yield call(coins_api);
+            const coins = coinsRaw;
             yield put({
                 type: 'updateState',
-                payload: { coins , scrollEl},
+                payload: { coins, scrollEl, coinsRaw },
             })
         }
     },

@@ -145,9 +145,6 @@ export default class ValueChart extends React.Component {
 
     render() {
         const { dataValue, dataInvest } = this.props;
-        if (!dataValue.length) {
-            return null;
-        }
         const {
             valueSpace,
             investSpace,

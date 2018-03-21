@@ -9,10 +9,9 @@ import { compactInteger } from '../../utils/common';
 import { List as AMList, SearchBar } from 'antd-mobile';
 const ListItem = AMList.Item;
 
-const Market = ({ market }) => {
+const Market = ({ market, dispatch }) => {
     const scrollEl = market.scrollEl ? market.scrollEl.parentNode : window;
     const list = Immutable.List(market.coins);
-    const scrollToIndex = -1;
 
     const _rowRenderer = ({ index, isScrolling, isVisible, key, style }) => {
         const row = list.get(index);
@@ -35,9 +34,27 @@ const Market = ({ market }) => {
         return row.size || 80;
     }
 
+    const _onSearch = (input) => {
+        const inputUpperCase = input.toUpperCase();
+        // exact match user input
+        let coins = market.coinsRaw.filter(item => {
+            return item.symbol === inputUpperCase;
+        });
+        // if not, match whose name containing user input
+        if (!coins.length) {
+            coins = market.coinsRaw.filter(item => {
+                return item.name.toUpperCase().includes(inputUpperCase);
+            });
+        }
+        dispatch({
+            type: 'market/updateState',
+            payload: { coins }
+        });
+    }
+
     return (
         <div>
-            <SearchBar placeholder="Search" maxLength={8} />
+            <SearchBar placeholder="Search" maxLength={8} className={styles.SearchBar} onChange={_onSearch} />
             <WindowScroller
                 scrollElement={scrollEl}>
                 {({ height = 1, isScrolling, registerChild, onChildScroll, scrollTop }) => (
@@ -59,7 +76,6 @@ const Market = ({ market }) => {
                                             rowCount={list.size}
                                             rowHeight={_getRowHeight}
                                             rowRenderer={_rowRenderer}
-                                            scrollToIndex={scrollToIndex}
                                             scrollTop={scrollTop}
                                             width={width}
                                         />
@@ -76,7 +92,7 @@ const Market = ({ market }) => {
 
 Market.propTypes = {
     market: PropTypes.object,
-    loading: PropTypes.object,
+    dispatch: PropTypes.func,
 }
 
 export default connect(({ market }) => ({ market }))(Market);

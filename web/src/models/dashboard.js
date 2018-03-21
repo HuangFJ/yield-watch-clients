@@ -33,7 +33,7 @@ export default {
             const totalValue = coinList.reduce(
                 (accumulator, curVal) => accumulator + curVal.value_cny,
                 0
-            ).toFixed(2);
+            );
             const values = myValues.map(datum => [datum[0] * 1000, datum[1]]);
             yield put({
                 type: 'updateState', payload: {

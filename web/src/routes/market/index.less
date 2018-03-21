@@ -1,17 +1,27 @@
   .WindowScrollerWrapper {
-    flex: 1 1 auto;
+      flex: 1 1 auto;
   }
-  
+
   .row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0 25px;
-    background-color: #fff;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 0 25px;
+      background-color: #fff;
   }
-  
+
   .rowScrolling::after {
-    // content: ': scrolling';
-    font-size: 0.65rem;
-    color: #aaa;
+      // content: ': scrolling';
+      font-size: 0.65rem;
+      color: #aaa;
+  }
+
+  .SearchBar {
+      * {
+          box-sizing: content-box;
+      }
+  }
+
+  :global(.am-search){
+    border-bottom: 1px solid #ddd;
   }

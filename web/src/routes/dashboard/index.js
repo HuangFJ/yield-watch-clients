@@ -4,34 +4,46 @@ import PropTypes from 'prop-types';
 import { CoinList, ValueChart, ValueDistribution } from './components';
 import { List, Flex } from 'antd-mobile';
 import styles from './index.less';
+import { compactInteger } from '../../utils/common';
 
 const Dashboard = ({ dashboard }) => {
+    const emptyListItem = <List.Item className={styles.emptyListItem}>暂无数据</List.Item>;
+
     return (
         <div>
             <List renderHeader={() => '概览'} className={styles.summary}>
                 <List.Item>
                     <Flex>
                         <Flex.Item>
-                            资产总市值 ￥{dashboard.totalValue}
+                            资产市值 ￥{compactInteger(dashboard.totalValue, 2)}
                         </Flex.Item>
                         <Flex.Item>
-                            本金结余 ￥{dashboard.totalInvest}
+                            本金结余 ￥{compactInteger(dashboard.totalInvest, 2)}
                         </Flex.Item>
                     </Flex>
                 </List.Item>
             </List>
             <List renderHeader={() => '资产市值变化'} className={styles.values}>
-                <List.Item>
-                    <ValueChart dataValue={dashboard.values} dataInvest={dashboard.invest} />
-                </List.Item>
+                {dashboard.values.length ?
+                    <List.Item>
+                        <ValueChart dataValue={dashboard.values} dataInvest={dashboard.invest} />
+                    </List.Item>
+                    : emptyListItem
+                }
             </List>
             <List renderHeader={() => '资产结构'} className={styles.distribution}>
-                <List.Item>
-                    <ValueDistribution data={dashboard.coinList} />
-                </List.Item>
+                {dashboard.coinList.length ?
+                    <List.Item>
+                        <ValueDistribution data={dashboard.coinList} />
+                    </List.Item>
+                    : emptyListItem
+                }
             </List>
             <List renderHeader={() => '资产列表'} className={styles.assets}>
-                <CoinList data={dashboard.coinList} />
+                {dashboard.coinList.length ?
+                    <CoinList data={dashboard.coinList} />
+                    : emptyListItem
+                }
             </List>
         </div>
     )
@@ -39,7 +51,6 @@ const Dashboard = ({ dashboard }) => {
 
 Dashboard.propTypes = {
     dashboard: PropTypes.object,
-    loading: PropTypes.object,
 }
 
 export default connect(({ dashboard }) => ({ dashboard }))(Dashboard);
