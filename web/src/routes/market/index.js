@@ -44,25 +44,27 @@ const Market = ({ market }) => {
                     <div className={styles.WindowScrollerWrapper}>
                         <AutoSizer disableHeight>
                             {({ width }) => (
-                                <AMList ref={registerChild}>
-                                    <List
-                                        ref={el => {
-                                            window.listEl = el;
-                                        }}
-                                        autoHeight
-                                        className={styles.List}
-                                        height={height}
-                                        isScrolling={isScrolling}
-                                        onScroll={onChildScroll}
-                                        overscanRowCount={2}
-                                        rowCount={list.size}
-                                        rowHeight={_getRowHeight}
-                                        rowRenderer={_rowRenderer}
-                                        scrollToIndex={scrollToIndex}
-                                        scrollTop={scrollTop}
-                                        width={width}
-                                    />
-                                </AMList>
+                                <div ref={registerChild}>
+                                    <AMList>
+                                        <List
+                                            ref={el => {
+                                                window.listEl = el;
+                                            }}
+                                            autoHeight
+                                            className={styles.List}
+                                            height={height}
+                                            isScrolling={isScrolling}
+                                            onScroll={onChildScroll}
+                                            overscanRowCount={2}
+                                            rowCount={list.size}
+                                            rowHeight={_getRowHeight}
+                                            rowRenderer={_rowRenderer}
+                                            scrollToIndex={scrollToIndex}
+                                            scrollTop={scrollTop}
+                                            width={width}
+                                        />
+                                    </AMList>
+                                </div>
                             )}
                         </AutoSizer>
                     </div>

@@ -6,6 +6,13 @@ const Item = List.Item;
 const Brief = Item.Brief;
 
 const CoinList = ({ data }) => {
+    if(!data.length){
+        return (
+            <Item>
+                暂无数据
+            </Item>
+        );
+    }
     return (
         data.map((item, key) => (
             <Item key={item.coin.id} extra={`$${item.coin.price_usd}`} align="top" 

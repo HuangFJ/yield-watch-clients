@@ -11,7 +11,6 @@ import React from 'react';
 import * as d3 from 'd3';
 import { array } from 'prop-types';
 import { withFauxDOM } from 'react-faux-dom'
-import './ValueDistribution.css';
 import {compactInteger} from '../../../utils/common';
 
 function collide(arr) {
