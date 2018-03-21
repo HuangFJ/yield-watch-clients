@@ -13,17 +13,22 @@ const App = ({ children, dispatch, app, loading, location }) => {
 
     let { pathname } = location;
     pathname = pathname.startsWith('/') ? pathname : `/${pathname}`;
+
+    const isLoading = loading.effects['app/query']
+        || loading.effects['dashboard/query']
+        || loading.effects['market/query'];
+
     if (OPEN_PAGES && OPEN_PAGES.includes(pathname)) {
         return (
             <div>
-                <Loader fullScreen spinning={loading.effects['app/query']} />
+                <Loader fullScreen spinning={isLoading} />
                 {children}
             </div>
         );
     }
     return (
         <div>
-            <Loader fullScreen spinning={loading.effects['app/query']} />
+            <Loader fullScreen spinning={isLoading} />
             <Helmet>
                 <title>{`Welcome! ${app.user.name}`}</title>
             </Helmet>

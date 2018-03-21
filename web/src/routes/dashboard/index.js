@@ -3,12 +3,10 @@ import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import { CoinList, ValueChart, ValueDistribution } from './components';
 import { List, Flex } from 'antd-mobile';
-import { Loader } from '../../components';
 
-const Dashboard = ({ dashboard, loading }) => {
+const Dashboard = ({ dashboard }) => {
     return (
         <div>
-            <Loader fullScreen spinning={loading.effects['dashboard/query']} />
             <List renderHeader={() => '概览'} >
                 <List.Item>
                     <Flex>
@@ -43,4 +41,4 @@ Dashboard.propTypes = {
     loading: PropTypes.object,
 }
 
-export default connect(({ dashboard, loading }) => ({ dashboard, loading }))(Dashboard);
+export default connect(({ dashboard }) => ({ dashboard }))(Dashboard);

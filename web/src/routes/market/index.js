@@ -5,11 +5,11 @@ import Immutable from 'immutable';
 import styles from './index.less';
 import { WindowScroller, List, AutoSizer } from 'react-virtualized';
 import cn from 'classnames';
-import { Loader } from '../../components';
-import { List as amList } from 'antd-mobile';
-const ListItem = amList.Item;
+import { compactInteger } from '../../utils/common';
+import { List as AMList, SearchBar } from 'antd-mobile';
+const ListItem = AMList.Item;
 
-const Market = ({ market, loading }) => {
+const Market = ({ market }) => {
     const scrollEl = market.scrollEl ? market.scrollEl.parentNode : window;
     const list = Immutable.List(market.coins);
     const scrollToIndex = -1;
@@ -22,16 +22,11 @@ const Market = ({ market, loading }) => {
         });
 
         return (
-            <ListItem key={key} className={className} style={style}
-                extra={`\$${row.price_usd}`}
-                align="top"
+            <ListItem key={key} className={className} style={style} extra={`$${row.price_usd}`} align="top"
                 thumb={`https://s2.coinmarketcap.com/static/img/coins/32x32/${row.no}.png`} multipleLine>
                 {row.name}
-                <ListItem.Brief>{row.volume_usd}</ListItem.Brief>
+                <ListItem.Brief>24H成交${compactInteger(row.volume_usd, 2)}</ListItem.Brief>
             </ListItem>
-            // <div key={key} className={className} style={style}>
-            //     {row.name}
-            // </div>
         );
     };
 
@@ -42,14 +37,14 @@ const Market = ({ market, loading }) => {
 
     return (
         <div>
-            <Loader fullScreen spinning={loading.effects['market/query']} />
+            <SearchBar placeholder="Search" maxLength={8} />
             <WindowScroller
                 scrollElement={scrollEl}>
                 {({ height = 1, isScrolling, registerChild, onChildScroll, scrollTop }) => (
                     <div className={styles.WindowScrollerWrapper}>
                         <AutoSizer disableHeight>
                             {({ width }) => (
-                                <div ref={registerChild}>
+                                <AMList ref={registerChild}>
                                     <List
                                         ref={el => {
                                             window.listEl = el;
@@ -67,7 +62,7 @@ const Market = ({ market, loading }) => {
                                         scrollTop={scrollTop}
                                         width={width}
                                     />
-                                </div>
+                                </AMList>
                             )}
                         </AutoSizer>
                     </div>
@@ -82,4 +77,4 @@ Market.propTypes = {
     loading: PropTypes.object,
 }
 
-export default connect(({ market, loading }) => ({ market, loading }))(Market);
+export default connect(({ market }) => ({ market }))(Market);

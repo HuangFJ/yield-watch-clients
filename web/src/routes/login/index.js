@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { List, InputItem, Button, Flex, Toast } from 'antd-mobile';
+import { List, InputItem, Button, Flex, Toast, Result } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import { PropTypes } from 'prop-types';
 import { CountdownButton } from './components';
@@ -95,6 +95,10 @@ const Login = ({
             <Helmet>
                 <title>You need login!</title>
             </Helmet>
+            <Result
+                img={<img src="images/yield.png" style={{ width: 60, height: 60 }} className="am-icon" alt="" />}
+                title="请先登录"
+            />
             <List>
                 <List.Item>
                     {getFieldDecorator('strMobile')(
