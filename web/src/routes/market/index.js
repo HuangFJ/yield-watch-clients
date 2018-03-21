@@ -3,36 +3,56 @@ import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import Immutable from 'immutable';
 import styles from './index.less';
-import { WindowScroller, List, AutoSizer } from 'react-virtualized';
+import { WindowScroller, List, AutoSizer, CellMeasurerCache, CellMeasurer } from 'react-virtualized';
 import cn from 'classnames';
 import { compactInteger } from '../../utils/common';
 import { List as AMList, SearchBar } from 'antd-mobile';
 const ListItem = AMList.Item;
 
 const Market = ({ market, dispatch }) => {
+    const _cache = new CellMeasurerCache({
+        fixedWidth: true,
+        minHeight: 60,
+    });
+
     const scrollEl = market.scrollEl ? market.scrollEl.parentNode : window;
     const list = Immutable.List(market.coins);
 
-    const _rowRenderer = ({ index, isScrolling, isVisible, key, style }) => {
+    const _rowRenderer = ({ index, isScrolling, isVisible, key, style, parent }) => {
         const row = list.get(index);
         const className = cn(styles.row, {
             [styles.rowScrolling]: isScrolling,
             isVisible: isVisible,
         });
+        // https://bvaughn.github.io/react-virtualized/#/components/CellMeasurer
 
         return (
-            <ListItem key={key} className={className} style={style} extra={`$${row.price_usd}`} align="top"
-                thumb={`https://s2.coinmarketcap.com/static/img/coins/32x32/${row.no}.png`} multipleLine>
-                {row.name}
-                <ListItem.Brief>24H成交${compactInteger(row.volume_usd, 2)}</ListItem.Brief>
-            </ListItem>
+            <CellMeasurer
+                cache={_cache}
+                columnIndex={0}
+                key={key}
+                rowIndex={index}
+                parent={parent}>
+                {({ measure }) => (
+                    // <div className={classNames} style={style}>
+                    //     <img
+                    //         onLoad={measure}
+                    //         src={source}
+                    //         style={{
+                    //             width: imageWidth,
+                    //         }}
+                    //     />
+                    // </div>
+                    <ListItem key={key} className={className} style={style} extra={`$${row.price_usd}`} align="top"
+                        thumb={`https://s2.coinmarketcap.com/static/img/coins/32x32/${row.no}.png`} multipleLine>
+                        {row.name}
+                        <ListItem.Brief>24H成交${compactInteger(row.volume_usd, 2)}</ListItem.Brief>
+                    </ListItem>
+                )}
+            </CellMeasurer>
+
         );
     };
-
-    const _getRowHeight = ({ index }) => {
-        const row = list.get(index % list.size);
-        return row.size || 80;
-    }
 
     const _onSearch = (input) => {
         const inputUpperCase = input.toUpperCase();
@@ -68,13 +88,14 @@ const Market = ({ market, dispatch }) => {
                                                 window.listEl = el;
                                             }}
                                             autoHeight
+                                            deferredMeasurementCache={_cache}
                                             className={styles.List}
                                             height={height}
                                             isScrolling={isScrolling}
                                             onScroll={onChildScroll}
                                             overscanRowCount={2}
                                             rowCount={list.size}
-                                            rowHeight={_getRowHeight}
+                                            rowHeight={_cache.rowHeight}
                                             rowRenderer={_rowRenderer}
                                             scrollTop={scrollTop}
                                             width={width}
