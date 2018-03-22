@@ -89,6 +89,13 @@ const Market = ({ market, dispatch }) => {
         });
     }
 
+    const _init = () => {
+        dispatch({
+            type: 'market/updateState',
+            payload: { coins: [] }
+        });
+    };
+
     return (
         <StickyContainer>
             <Sticky>
@@ -96,7 +103,10 @@ const Market = ({ market, dispatch }) => {
                     ({ style }) => {
                         return (
                             <header style={{ ...style, zIndex: 99 }}>
-                                <SearchBar placeholder="Search" maxLength={8} className={styles.SearchBar} onChange={_onSearch} />
+                                <SearchBar placeholder="Search" maxLength={8} className={styles.SearchBar}
+                                    onFocus={_init}
+                                    onBlur={_init}
+                                    onChange={_onSearch} />
                             </header>
                         )
                     }
