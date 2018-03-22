@@ -8,6 +8,7 @@ import { Loader } from '../components';
 import { Helmet } from 'react-helmet';
 import { OPEN_PAGES } from '../constants';
 import { TabBar } from 'antd-mobile';
+import styles from './app.less';
 
 const App = ({ children, dispatch, app, loading, location }) => {
 
@@ -34,26 +35,14 @@ const App = ({ children, dispatch, app, loading, location }) => {
             </Helmet>
             <div style={{ position: 'fixed', height: '100%', width: '100%', top: 0 }}>
                 <TabBar
-                    unselectedTintColor="#949494"
-                    tintColor="#33A3F4"
+                    unselectedTintColor="rgb(0, 38, 77)"
+                    tintColor="#7f00ff"
                     barTintColor="white"
                 >
                     <TabBar.Item
-                        title="DashBoard"
-                        icon={<div style={{
-                            width: '22px',
-                            height: '22px',
-                            background: 'url(https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png) center center /  21px 21px no-repeat'
-                        }}
-                        />
-                        }
-                        selectedIcon={<div style={{
-                            width: '22px',
-                            height: '22px',
-                            background: 'url(https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png) center center /  21px 21px no-repeat'
-                        }}
-                        />
-                        }
+                        title="资产"
+                        icon={<div className={styles.dashboardTab} />}
+                        selectedIcon={<div className={styles.dashboardTabSelected} />}
                         selected={pathname === '/dashboard'}
                         onPress={() => dispatch(routerRedux.push({
                             pathname: '/dashboard'
@@ -62,26 +51,25 @@ const App = ({ children, dispatch, app, loading, location }) => {
                         {children}
                     </TabBar.Item>
                     <TabBar.Item
-                        title="Market"
-                        icon={<div style={{
-                            width: '22px',
-                            height: '22px',
-                            background: 'url(https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png) center center /  21px 21px no-repeat'
-                        }}
-                        />
-                        }
-                        selectedIcon={<div style={{
-                            width: '22px',
-                            height: '22px',
-                            background: 'url(https://zos.alipayobjects.com/rmsportal/dNuvNrtqUztHCwM.png) center center /  21px 21px no-repeat'
-                        }}
-                        />
-                        }
+                        title="市场"
+                        icon={<div className={styles.marketTab} />}
+                        selectedIcon={<div className={styles.marketTabSelected} />}
                         selected={pathname === '/market'}
                         onPress={() => dispatch(routerRedux.push({
                             pathname: '/market'
                         }))}
                         ref={compo => app.marketScrollEl = ReactDOM.findDOMNode(compo)}
+                    >
+                        {children}
+                    </TabBar.Item>
+                    <TabBar.Item
+                        title="探索"
+                        icon={<div className={styles.diamondTab} />}
+                        selectedIcon={<div className={styles.diamondTabSelected} />}
+                        selected={pathname === '/diamond'}
+                        onPress={() => dispatch(routerRedux.push({
+                            pathname: '/diamond'
+                        }))}
                     >
                         {children}
                     </TabBar.Item>

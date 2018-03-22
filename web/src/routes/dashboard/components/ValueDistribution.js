@@ -11,7 +11,8 @@ import React from 'react';
 import * as d3 from 'd3';
 import { array } from 'prop-types';
 import { withFauxDOM } from 'react-faux-dom'
-import {compactInteger} from '../../../utils/common';
+import { compactInteger } from '../../../utils/common';
+import * as chroma from 'chroma-js';
 
 function collide(arr) {
     const alpha = 3;
@@ -54,11 +55,11 @@ class ValueDistribution extends React.Component {
 
     // Store our chart dimensions
     cDim = {
-        height: 350,
-        width: 450,
-        innerRadius: 60,
-        outerRadius: 120,
-        labelRadius: 150
+        height: 450,
+        width: 500,
+        innerRadius: 100,
+        outerRadius: 130,
+        labelRadius: 160
     }
 
     static propTypes = {
@@ -90,7 +91,7 @@ class ValueDistribution extends React.Component {
         // This translate property moves the origin of the group's coordinate
         // space to the center of the SVG element, saving us translating every
         // coordinate individually. 
-        canvas.attr('transform', `translate(${this.cDim.width / 2},${this.cDim.width / 2})`);
+        canvas.attr('transform', `translate(${this.cDim.width * 0.5},${this.cDim.height * 0.57})`);
 
         this.art = canvas.append('g').attr('id', 'art');
         this.labels = canvas.append('g').attr('id', 'labels');
@@ -129,7 +130,10 @@ class ValueDistribution extends React.Component {
             .outerRadius(this.cDim.outerRadius);
 
         // This is an ordinal scale that returns 10 predefined colors.
-        const pied_colors = d3.scaleOrdinal(d3.schemeCategory20c);
+        const pied_colors = d3.scaleOrdinal(chroma.scale([
+            'rgb(255, 204, 77)',
+            'rgb(84, 163, 242)',
+        ]).mode('lch').colors(pied_data.length));
 
         // Let's start drawing the arcs.
         const enteringArcs = this.art.selectAll(".wedge").data(pied_data).enter();
@@ -145,7 +149,7 @@ class ValueDistribution extends React.Component {
         const labelGroups = enteringLabels.append("g").attr("class", "label");
         labelGroups.append("circle")
             .attr('class', "label-circle")
-            .attr('r', 2)
+            .attr('r', 1)
             .attr('transform', (d, i) => {
                 return "translate(" + pied_arc.centroid(d) + ")";
             });
@@ -179,7 +183,7 @@ class ValueDistribution extends React.Component {
                 });
 
                 // Label field of data.
-                return `${d.data.coin.symbol},${compactInteger(d.data.value_cny, 2)}`;
+                return `${d.data.coin.symbol}￥${compactInteger(d.data.value_cny, 2)}`;
             });
 
         collide(labelSimulation);

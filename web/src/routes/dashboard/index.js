@@ -2,12 +2,14 @@ import React from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import { CoinList, ValueChart, ValueDistribution } from './components';
-import { List, Flex } from 'antd-mobile';
+import { List, Flex, WhiteSpace } from 'antd-mobile';
 import styles from './index.less';
 import { compactInteger } from '../../utils/common';
 
 const Dashboard = ({ dashboard }) => {
-    const emptyListItem = <List.Item className={styles.emptyListItem}>暂无数据</List.Item>;
+    const emptyListItem = <List.Item className={styles.emptyListItem}>
+    暂无数据
+    </List.Item>;
 
     return (
         <div>
@@ -45,6 +47,7 @@ const Dashboard = ({ dashboard }) => {
                     : emptyListItem
                 }
             </List>
+            <WhiteSpace />
         </div>
     )
 }

@@ -1,3 +1,5 @@
+@import "../../assets/common.less";
+
 .emptyListItem {
      :global(.am-list-line) {
          :global(.am-list-content) {
@@ -14,16 +16,41 @@
      :global(.label-text) {
         alignment-baseline: middle;
         font-size: 12px;
-        font-family: arial, helvetica, "sans-serif";
-        fill: #393939;
+        fill:@color-oxford-blue;
     }
      :global(.label-line) {
         stroke-width: 1;
-        stroke: #393939;
+        stroke: @color-oxford-blue;
     }
      :global(.label-circle) {
-        fill: #393939;
+        fill:@color-oxford-blue;
     }
 }
 
-.assets {}
+.assets {
+    :global(.am-list-line) {
+        &::after {
+            // transform:scaleY(1) !important;
+        }
+    }
+}
+
+.percentColorUp {
+    color: @color-bleu-de-france-dark;
+}
+
+.percentColorDown {
+    color: @color-vermilion-dark;
+}
+
+.yTitle{
+    fill: @color-rich-black;
+}
+
+.valueArea{
+    fill:@color-bleu-de-france-light; 
+}
+
+.investArea{
+    fill: @color-vermilion-light;
+}

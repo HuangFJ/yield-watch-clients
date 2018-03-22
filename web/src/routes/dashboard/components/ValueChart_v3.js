@@ -16,7 +16,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 import { array } from 'prop-types';
-import * as chroma from 'chroma-js';
+import styles from '../index.less';
 
 export default class ValueChart extends React.Component {
     margin = { top: 20, right: 20, bottom: 30, left: 50 };
@@ -63,8 +63,7 @@ export default class ValueChart extends React.Component {
         if (!yTitle.nodes().length) {
             d3.select(yAxisNode)
                 .append("text")
-                .attr('class', 'title')
-                .attr('fill', chroma('Black'))
+                .attr('class', styles.yTitle)
                 .attr("transform", "rotate(-90)")
                 .attr("y", 6)
                 .attr("dy", ".71em")
@@ -169,9 +168,9 @@ export default class ValueChart extends React.Component {
                             : null
                         }
                     </defs>
-                    <path style={{ 'fill': chroma('#71990f') }} clipPath="url(#potentialInvestSpace)" d={valueSpace(dataValue)} />
+                    <path className={styles.valueArea} clipPath="url(#potentialInvestSpace)" d={valueSpace(dataValue)} />
                     {dataInvest && dataInvest.length ?
-                        <path style={{ 'fill': chroma('#e20482') }} clipPath="url(#potentialValueSpace)" d={investSpace(dataInvest)} />
+                        <path className={styles.investArea} clipPath="url(#potentialValueSpace)" d={investSpace(dataInvest)} />
                         : null
                     }
 

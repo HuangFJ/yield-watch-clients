@@ -8,6 +8,7 @@ export default {
         coins: [],
         scrollEl: null,
         coinsRaw: [],
+        scrollToIndex: 0,
     },
 
     subscriptions: {

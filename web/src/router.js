@@ -25,6 +25,10 @@ const Routers = ({ history, app }) => {
       path: '/market',
       models: () => [import('./models/market')],
       component: () => import('./routes/market/'),
+    }, {
+      path: '/diamond',
+      models: () => [import('./models/diamond')],
+      component: () => import('./routes/diamond/'),
     },
   ];
 
