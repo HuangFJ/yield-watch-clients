@@ -1,19 +1,26 @@
   @import "../../assets/common.less";
-
+  
   .WindowScrollerWrapper {
-      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
   }
 
   .SearchBar {
       * {
-          box-sizing: content-box;
+          box-sizing: content-box !important;
+      }
+      border-bottom: 1px solid #ddd !important;
+  }
+
+  .ScrollList {
+       :global .am-list-body {
+          border-top: none !important;
+          border-bottom: none !important;
       }
   }
 
-  :global(.am-search) {
-      border-bottom: 1px solid #ddd;
-  } 
-  
   .percentColorUp {
       color: @color-bleu-de-france-dark;
   }

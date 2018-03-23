@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import Immutable from 'immutable';
 import styles from './index.less';
-import { WindowScroller, List, AutoSizer, CellMeasurerCache, CellMeasurer } from 'react-virtualized';
+import { List, AutoSizer, CellMeasurerCache, CellMeasurer } from 'react-virtualized';
 import cn from 'classnames';
-import { StickyContainer, Sticky } from 'react-sticky';
 import { compactInteger } from '../../utils/common';
 import { List as AMList, SearchBar } from 'antd-mobile';
 const ListItem = AMList.Item;
@@ -23,7 +22,6 @@ const Market = ({ market, dispatch }) => {
         }
     }
 
-    const scrollEl = market.scrollEl ? market.scrollEl.parentNode : window;
     const list = Immutable.List(market.coins);
 
     const _rowRenderer = ({ index, isScrolling, isVisible, key, style, parent }) => {
@@ -72,16 +70,21 @@ const Market = ({ market, dispatch }) => {
     };
 
     const _onSearch = (input) => {
-        const inputUpperCase = input.toUpperCase();
-        // exact match user input
-        let coins = market.coinsRaw.filter(item => {
-            return item.symbol === inputUpperCase;
-        });
-        // if not, match whose name containing user input
-        if (!coins.length) {
+        let coins;
+        if (input) {
+            const inputUpperCase = input.toUpperCase();
+            // exact match user input
             coins = market.coinsRaw.filter(item => {
-                return item.name.toUpperCase().includes(inputUpperCase);
+                return item.symbol === inputUpperCase;
             });
+            // if not, match whose name containing user input
+            if (!coins.length) {
+                coins = market.coinsRaw.filter(item => {
+                    return item.name.toUpperCase().includes(inputUpperCase);
+                });
+            }
+        } else {
+            coins = market.coinsRaw;
         }
         dispatch({
             type: 'market/updateState',
@@ -89,64 +92,30 @@ const Market = ({ market, dispatch }) => {
         });
     }
 
-    const _init = () => {
-        dispatch({
-            type: 'market/updateState',
-            payload: { coins: [] }
-        });
-    };
-
     return (
-        <StickyContainer>
-            <Sticky>
-                {
-                    ({ style }) => {
-                        return (
-                            <header style={{ ...style, zIndex: 99 }}>
-                                <SearchBar placeholder="Search" maxLength={8} className={styles.SearchBar}
-                                    onFocus={_init}
-                                    onBlur={_init}
-                                    onChange={_onSearch} />
-                            </header>
-                        )
-                    }
-                }
-            </Sticky>
-            <div>
-                <WindowScroller
-                    scrollElement={scrollEl}>
-                    {({ height = 1, isScrolling, registerChild, onChildScroll, scrollTop }) => (
-                        <div className={styles.WindowScrollerWrapper}>
-                            <AutoSizer disableHeight>
-                                {({ width }) => (
-                                    <div ref={registerChild}>
-                                        <AMList>
-                                            <List
-                                                ref={el => {
-                                                    window.listEl = el;
-                                                }}
-                                                autoHeight
-                                                deferredMeasurementCache={_cache}
-                                                height={height}
-                                                isScrolling={isScrolling}
-                                                onScroll={onChildScroll}
-                                                overscanRowCount={2}
-                                                rowCount={list.size}
-                                                rowHeight={_cache.rowHeight}
-                                                rowRenderer={_rowRenderer}
-                                                scrollTop={scrollTop}
-                                                scrollToIndex={market.scrollToIndex}
-                                                width={width}
-                                            />
-                                        </AMList>
-                                    </div>
-                                )}
-                            </AutoSizer>
-                        </div>
-                    )}
-                </WindowScroller>
+        <div className={styles.WindowScrollerWrapper}>
+            <div style={{ flex: '0 0 auto' }}>
+                <SearchBar placeholder="Search" maxLength={8} className={styles.SearchBar} onChange={_onSearch} />
             </div>
-        </StickyContainer>
+            <div style={{ flex: '1 1 auto', height: '100%' }}>
+                <AutoSizer>
+                    {({ width, height }) => (
+                        <AMList className={styles.ScrollList}>
+                            <List
+                                deferredMeasurementCache={_cache}
+                                height={height}
+                                overscanRowCount={2}
+                                rowCount={list.size}
+                                rowHeight={_cache.rowHeight}
+                                rowRenderer={_rowRenderer}
+                                scrollToIndex={market.scrollToIndex}
+                                width={width}
+                            />
+                        </AMList>
+                    )}
+                </AutoSizer>
+            </div>
+        </div>
     )
 }
 

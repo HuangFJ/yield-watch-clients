@@ -1,6 +1,5 @@
 /* global window */
 import React from 'react';
-import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types';
 import { withRouter, routerRedux } from 'dva/router';
 import { connect } from 'dva';
@@ -58,7 +57,6 @@ const App = ({ children, dispatch, app, loading, location }) => {
                         onPress={() => dispatch(routerRedux.push({
                             pathname: '/market'
                         }))}
-                        ref={compo => app.marketScrollEl = ReactDOM.findDOMNode(compo)}
                     >
                         {children}
                     </TabBar.Item>
