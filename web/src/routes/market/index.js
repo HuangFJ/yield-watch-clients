@@ -6,26 +6,28 @@ import styles from './index.less';
 import { List, AutoSizer, CellMeasurerCache, CellMeasurer } from 'react-virtualized';
 import cn from 'classnames';
 import { compactInteger } from '../../utils/common';
-import { List as AMList, SearchBar } from 'antd-mobile';
+import { List as AMList, SearchBar, Flex } from 'antd-mobile';
 const ListItem = AMList.Item;
 
-const Market = ({ market, dispatch }) => {
-    const _cache = new CellMeasurerCache({
+class Market extends React.Component {
+
+    _cache = new CellMeasurerCache({
         fixedWidth: true,
     });
 
-    const _percentColor = (val) => {
+    list = Immutable.List(this.props.market.coins);
+    scrollToIndex = -1;
+
+    _percentColor = (val) => {
         if (val > 0) {
             return styles.percentColorUp;
         } else if (val < 0) {
             return styles.percentColorDown;
         }
-    }
+    };
 
-    const list = Immutable.List(market.coins);
-
-    const _rowRenderer = ({ index, isScrolling, isVisible, key, style, parent }) => {
-        const row = list.get(index);
+    _rowRenderer = ({ index, isScrolling, isVisible, key, style, parent }) => {
+        const row = this.list.get(index);
         const className = cn({
             isVisible: isVisible,
         });
@@ -33,7 +35,7 @@ const Market = ({ market, dispatch }) => {
 
         return (
             <CellMeasurer
-                cache={_cache}
+                cache={this._cache}
                 columnIndex={0}
                 key={key}
                 rowIndex={index}
@@ -52,7 +54,7 @@ const Market = ({ market, dispatch }) => {
                         extra={
                             <div>
                                 {`$${row.price_usd}`}<br />
-                                <span className={_percentColor(row.percent_change_24h)}>{`${row.percent_change_24h}%`}</span>
+                                <span className={this._percentColor(row.percent_change_24h)}>{`${row.percent_change_24h}%`}</span>
                             </div>
                         }
                         align="top"
@@ -69,59 +71,66 @@ const Market = ({ market, dispatch }) => {
         );
     };
 
-    const _onSearch = (input) => {
+    _onSearch = (input) => {
         let coins;
         if (input) {
             const inputUpperCase = input.toUpperCase();
             // exact match user input
-            coins = market.coinsRaw.filter(item => {
+            coins = this.props.market.coinsRaw.filter(item => {
                 return item.symbol === inputUpperCase;
             });
             // if not, match whose name containing user input
             if (!coins.length) {
-                coins = market.coinsRaw.filter(item => {
+                coins = this.props.market.coinsRaw.filter(item => {
                     return item.name.toUpperCase().includes(inputUpperCase);
                 });
             }
         } else {
-            coins = market.coinsRaw;
+            coins = this.props.market.coinsRaw;
         }
-        dispatch({
+        this.scrollToIndex = 0;
+        this.props.dispatch({
             type: 'market/updateState',
-            payload: { coins, scrollToIndex: 0 }
+            payload: { coins }
         });
+    };
+
+    componentWillUpdate(nextProps) {
+        this.list = Immutable.List(nextProps.market.coins);
     }
 
-    return (
-        <div className={styles.WindowScrollerWrapper}>
-            <div style={{ flex: '0 0 auto' }}>
-                <SearchBar placeholder="Search" maxLength={8} className={styles.SearchBar} onChange={_onSearch} />
-            </div>
-            <div style={{ flex: '1 1 auto', height: '100%' }}>
-                <AutoSizer>
-                    {({ width, height }) => (
-                        <AMList className={styles.ScrollList}>
-                            <List
-                                deferredMeasurementCache={_cache}
-                                height={height}
-                                overscanRowCount={2}
-                                rowCount={list.size}
-                                rowHeight={_cache.rowHeight}
-                                rowRenderer={_rowRenderer}
-                                scrollToIndex={market.scrollToIndex}
-                                width={width}
-                            />
-                        </AMList>
-                    )}
-                </AutoSizer>
-            </div>
-        </div>
-    )
+    render() {
+        return (
+            <Flex direction="column" style={{ width: '100%', height: '100%' }}>
+                <Flex.Item style={{ flex: 0, width: '100%' }}>
+                    <SearchBar placeholder="Search" maxLength={8} className={styles.SearchBar} onChange={this._onSearch} />
+                </Flex.Item>
+                <Flex.Item style={{ width: '100%', height: '100%' }}>
+                    <AutoSizer>
+                        {({ width, height }) => (
+                            <AMList className={styles.ScrollList}>
+                                <List
+                                    deferredMeasurementCache={this._cache}
+                                    height={height}
+                                    overscanRowCount={2}
+                                    rowCount={this.list.size}
+                                    rowHeight={this._cache.rowHeight}
+                                    rowRenderer={this._rowRenderer}
+                                    scrollToIndex={this.scrollToIndex}
+                                    width={width}
+                                />
+                            </AMList>
+                        )}
+                    </AutoSizer>
+                </Flex.Item>
+            </Flex>
+        );
+    }
 }
 
 Market.propTypes = {
     market: PropTypes.object,
     dispatch: PropTypes.func,
-}
+};
 
 export default connect(({ market }) => ({ market }))(Market);

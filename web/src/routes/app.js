@@ -34,7 +34,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
             </Helmet>
             <div style={{ position: 'fixed', height: '100%', width: '100%', top: 0 }}>
                 <TabBar
-                    unselectedTintColor="rgb(0, 38, 77)"
+                    unselectedTintColor="#000"
                     tintColor="#7f00ff"
                     barTintColor="white"
                 >

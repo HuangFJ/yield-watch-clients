@@ -7,7 +7,6 @@ export default {
     state: {
         coins: [],
         coinsRaw: [],
-        scrollToIndex: -1,
     },
 
     subscriptions: {
