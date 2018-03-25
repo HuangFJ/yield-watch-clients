@@ -13,6 +13,9 @@ const App = ({ children, dispatch, app, loading, location }) => {
 
     let { pathname } = location;
     pathname = pathname.startsWith('/') ? pathname : `/${pathname}`;
+    const isDashboard = pathname === '/dashboard';
+    const isMarket = pathname === '/market';
+    const isDiamond = pathname === '/diamond';
 
     const isLoading = loading.effects['app/query']
         || loading.effects['dashboard/query']
@@ -30,7 +33,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
         <div>
             <Loader fullScreen spinning={isLoading} />
             <Helmet>
-                <title>{`Welcome! ${app.user.name}`}</title>
+                <title>{`Welcome! ${app.user.name || ''}`}</title>
             </Helmet>
             <div style={{ position: 'fixed', height: '100%', width: '100%', top: 0 }}>
                 <TabBar
@@ -42,34 +45,34 @@ const App = ({ children, dispatch, app, loading, location }) => {
                         title="资产"
                         icon={<div className={styles.dashboardTab} />}
                         selectedIcon={<div className={styles.dashboardTabSelected} />}
-                        selected={pathname === '/dashboard'}
+                        selected={isDashboard}
                         onPress={() => dispatch(routerRedux.push({
                             pathname: '/dashboard'
                         }))}
                     >
-                        {children}
+                        {isDashboard ? children : null}
                     </TabBar.Item>
                     <TabBar.Item
                         title="市场"
                         icon={<div className={styles.marketTab} />}
                         selectedIcon={<div className={styles.marketTabSelected} />}
-                        selected={pathname === '/market'}
+                        selected={isMarket}
                         onPress={() => dispatch(routerRedux.push({
                             pathname: '/market'
                         }))}
                     >
-                        {children}
+                        {isMarket ? children : null}
                     </TabBar.Item>
                     <TabBar.Item
                         title="探索"
                         icon={<div className={styles.diamondTab} />}
                         selectedIcon={<div className={styles.diamondTabSelected} />}
-                        selected={pathname === '/diamond'}
+                        selected={isDiamond}
                         onPress={() => dispatch(routerRedux.push({
                             pathname: '/diamond'
                         }))}
                     >
-                        {children}
+                        {isDiamond ? children : null}
                     </TabBar.Item>
                 </TabBar>
             </div>
