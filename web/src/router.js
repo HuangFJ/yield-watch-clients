@@ -11,22 +11,27 @@ const Routers = ({ history, app }) => {
   const routes = [
     {
       path: '/login',
+      exact: true,
       models: () => [import('./models/login')],
       component: () => import('./routes/login/'),
     }, {
       path: '/register',
+      exact: true,
       models: () => [import('./models/register')],
       component: () => import('./routes/register/'),
     }, {
       path: '/dashboard',
+      exact: false,
       models: () => [import('./models/dashboard')],
       component: () => import('./routes/dashboard/'),
     }, {
       path: '/market',
+      exact: false,
       models: () => [import('./models/market')],
       component: () => import('./routes/market/'),
     }, {
       path: '/diamond',
+      exact: false,
       models: () => [import('./models/diamond')],
       component: () => import('./routes/diamond/'),
     },
@@ -38,9 +43,9 @@ const Routers = ({ history, app }) => {
         <Switch>
           <Route exact path="/" render={() => (<Redirect to="/dashboard" />)} />
           {
-            routes.map(({ path, ...dynamics }, key) =>
+            routes.map(({ path, exact, ...dynamics }, key) =>
               <Route key={key}
-                exact
+                exact={exact}
                 path={path}
                 component={dynamic({
                   app,

@@ -13,7 +13,6 @@ export default {
         user: {},
         refererPathname: '',
         refererQuery: {},
-        marketScrollEl: null,
     },
 
     subscriptions: {
