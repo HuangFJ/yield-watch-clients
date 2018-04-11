@@ -2,15 +2,25 @@ import React from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
 
-const Diamond = ({ app, diamond }) => (
-    <div>
-        Hi, {app.user.name}, 准备好开始探索了吗？
-    </div>
-);
+class Diamond extends React.Component {
 
-Diamond.propTypes = {
-    app: PropTypes.object,
-    diamond: PropTypes.object,
+    static propTypes = {
+        app: PropTypes.object,
+        diamond: PropTypes.object,
+    }
+
+    componentDidMount(){
+        console.log('Diamond did mount');
+    }
+
+    render() {
+        const { app } = this.props;
+        return (
+            <div>
+                Hi, {app.user.name}, 准备好开始探索了吗？
+            </div>
+        );
+    }
 }
 
-export default connect(({ app, diamond }) => ({ app, diamond }))(Diamond);
+export default connect(({ app }) => ({ app }))(Diamond);

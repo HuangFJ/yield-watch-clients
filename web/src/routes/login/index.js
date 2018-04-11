@@ -5,26 +5,26 @@ import { createForm } from 'rc-form';
 import { PropTypes } from 'prop-types';
 import { CountdownButton } from './components';
 import { Helmet } from 'react-helmet';
+import styles from '../app.less';
 
-const Login = ({
-    login,
-    loading,
-    dispatch,
-    form: {
-        getFieldDecorator,
-        validateFields,
-    },
-}) => {
+class Login extends React.Component {
 
-    const handleError = (err) => {
+    static propTypes = {
+        form: PropTypes.object,
+        dispatch: PropTypes.func,
+        loading: PropTypes.object,
+        login: PropTypes.object,
+    }
+
+    handleError = (err) => {
         err && Toast.fail(err.message);
-        dispatch({
+        this.props.dispatch({
             type: 'login/updateState',
             payload: { disabled: true },
         });
     };
 
-    const requireAndValidMobile = async (strMobile) => {
+    requireAndValidMobile = async (strMobile) => {
         let err;
         if (!strMobile) err = '手机号必填。';
         else if (!/\d{3} \d{4} \d{4}/g.test(strMobile)) err = '手机号格式错误。';
@@ -32,7 +32,7 @@ const Login = ({
         return err ? Promise.reject({ message: err }) : strMobile.replace(/ /g, '');
     };
 
-    const requireAndValidCode = async (strCode) => {
+    requireAndValidCode = async (strCode) => {
         let err;
         if (!strCode) err = '短信验证码必填。';
         else if (!/\d{4}/g.test(strCode)) err = '短信验证码格式错误。';
@@ -40,100 +40,97 @@ const Login = ({
         return err ? Promise.reject({ message: err }) : +strCode; //alias of parseInt
     };
 
-    const handleSms = () => validateFields((_, values) => {
+    handleSms = () => this.props.form.validateFields((_, values) => {
         const { strMobile } = values;
-        requireAndValidMobile(strMobile)
+        this.requireAndValidMobile(strMobile)
             .then(mobile =>
-                dispatch({
+                this.props.dispatch({
                     type: 'login/sms',
                     payload: { mobile },
                 })
             )
-            .catch(handleError);
+            .catch(this.handleError);
     });
 
-    const handleLogin = () => validateFields((_, values) => {
+    handleLogin = () => this.props.form.validateFields((_, values) => {
         const { strMobile, strCode } = values;
-        requireAndValidMobile(strMobile)
-            .then(mobile => requireAndValidCode(strCode)
+        this.requireAndValidMobile(strMobile)
+            .then(mobile => this.requireAndValidCode(strCode)
                 .then(code => Promise.resolve({ mobile, code })))
             .then(({ mobile, code }) => {
-                dispatch({
+                this.props.dispatch({
                     type: 'login/smsAuth',
                     payload: { mobile, code },
                 })
             })
-            .catch(handleError);
+            .catch(this.handleError);
     });
 
-    const handleMobileChange = (strMobile) => {
-        requireAndValidMobile(strMobile)
+    handleMobileChange = (strMobile) => {
+        this.requireAndValidMobile(strMobile)
             .then(_ => {
-                if (!login.countdown) return Promise.reject();
-                dispatch({
+                if (!this.props.login.countdown) return Promise.reject();
+                this.props.dispatch({
                     type: 'login/updateState',
                     payload: { disabled: false },
                 });
             })
-            .catch(_ => handleError())
+            .catch(_ => this.handleError())
     };
 
-    const handleCodeChange = (strCode) => {
-        requireAndValidCode(strCode)
+    handleCodeChange = (strCode) => {
+        this.requireAndValidCode(strCode)
             .then(_ => {
-                if (!login.countdown) return Promise.reject();
-                dispatch({
+                if (!this.props.login.countdown) return Promise.reject();
+                this.props.dispatch({
                     type: 'login/updateState',
                     payload: { disabled: false },
                 });
             })
-            .catch(_ => handleError())
+            .catch(_ => this.handleError())
     };
 
-    return (
-        <div>
-            <Helmet>
-                <title>You need login!</title>
-            </Helmet>
-            <Result
-                img={<img src="images/yield.png" style={{ width: 60, height: 60 }} className="am-icon" alt="" />}
-                title="请先登录"
-            />
-            <List>
-                <List.Item>
-                    {getFieldDecorator('strMobile')(
-                        <InputItem type="phone" onChange={handleMobileChange} placeholder="手机号码" />
-                    )}
-                </List.Item>
-                <List.Item>
-                    <Flex>
-                        <Flex.Item>
-                            {getFieldDecorator('strCode')(
-                                <InputItem type="number" onChange={handleCodeChange} placeholder="短信验证码" />
-                            )}
-                        </Flex.Item>
-                        <Flex.Item>
-                            <CountdownButton type="primary" size="small" label="发送" interval={login.interval}
-                                onClick={handleSms} loading={loading.effects['login/sms']} />
-                        </Flex.Item>
-                    </Flex>
+    render() {
+        const { login, loading } = this.props;
 
-                </List.Item>
-                <List.Item>
-                    <Button disabled={login.disabled} type="primary" onClick={handleLogin} loading={loading.effects['login/smsAuth']}>
-                        登录
+        return (
+            <div className={styles.fullScreen}>
+                <Helmet>
+                    <title>You need login!</title>
+                </Helmet>
+                <Result
+                    img={<img src="images/yield.png" style={{ width: 60, height: 60 }} className="am-icon" alt="" />}
+                    title="请先登录"
+                />
+                <List>
+                    <List.Item>
+                        {this.props.form.getFieldDecorator('strMobile')(
+                            <InputItem type="phone" onChange={this.handleMobileChange} placeholder="手机号码" />
+                        )}
+                    </List.Item>
+                    <List.Item>
+                        <Flex>
+                            <Flex.Item>
+                                {this.props.form.getFieldDecorator('strCode')(
+                                    <InputItem type="number" onChange={this.handleCodeChange} placeholder="短信验证码" />
+                                )}
+                            </Flex.Item>
+                            <Flex.Item>
+                                <CountdownButton type="primary" size="small" label="发送" interval={login.interval}
+                                    onClick={this.handleSms} loading={loading.effects['login/sms']} />
+                            </Flex.Item>
+                        </Flex>
+
+                    </List.Item>
+                    <List.Item>
+                        <Button disabled={login.disabled} type="primary" onClick={this.handleLogin} loading={loading.effects['login/smsAuth']}>
+                            登录
                     </Button>
-                </List.Item>
-            </List>
-        </div>
-    )
-}
-
-Login.propTypes = {
-    form: PropTypes.object,
-    dispatch: PropTypes.func,
-    loading: PropTypes.object,
-    login: PropTypes.object,
+                    </List.Item>
+                </List>
+            </div>
+        )
+    }
 }
 
 export default connect(({ login, loading }) => ({ login, loading }))(createForm()(Login));

@@ -1,7 +1,13 @@
 import dva from 'dva';
-import './index.css';
 import createLoading from 'dva-loading';
 import createHistory from 'history/createBrowserHistory';
+import router from './router';
+import './index.css';
+
+import appModel from './models/app';
+import loginModel from './models/login';
+import registerModel from './models/register';
+import coinModel from './models/coin';
 
 // 1. Initialize
 const app = dva({
@@ -17,10 +23,13 @@ app.use(createLoading({
 }));
 
 // 3. Model by redux
-app.model(require('./models/app').default);
+app.model(appModel);
+app.model(loginModel);
+app.model(registerModel);
+app.model(coinModel);
 
 // 4. Router by react-router
-app.router(require('./router').default);
+app.router(router);
 
 // 5. Start
 app.start('#root');

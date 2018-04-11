@@ -4,19 +4,26 @@ import { connect } from 'dva';
 import Immutable from 'immutable';
 import styles from './index.less';
 import { List, AutoSizer, CellMeasurerCache, CellMeasurer } from 'react-virtualized';
-import cn from 'classnames';
+import classNames from 'classnames';
 import { compactInteger } from '../../utils/common';
 import { List as AMList, SearchBar, Flex } from 'antd-mobile';
+import { routerRedux } from 'dva/router';
 const ListItem = AMList.Item;
 
 class Market extends React.Component {
 
+    static propTypes = {
+        market: PropTypes.object,
+        dispatch: PropTypes.func,
+    }
+
     _cache = new CellMeasurerCache({
         fixedWidth: true,
-    });
+    })
 
-    list = Immutable.List(this.props.market.coins);
-    scrollToIndex = -1;
+    list = Immutable.List(this.props.market.coins)
+
+    scrollToIndex = -1
 
     _percentColor = (val) => {
         if (val > 0) {
@@ -24,11 +31,11 @@ class Market extends React.Component {
         } else if (val < 0) {
             return styles.percentColorDown;
         }
-    };
+    }
 
     _rowRenderer = ({ index, isScrolling, isVisible, key, style, parent }) => {
         const row = this.list.get(index);
-        const className = cn({
+        const className = classNames({
             isVisible: isVisible,
         });
         // https://bvaughn.github.io/react-virtualized/#/components/CellMeasurer
@@ -41,16 +48,10 @@ class Market extends React.Component {
                 rowIndex={index}
                 parent={parent}>
                 {({ measure }) => (
-                    // <div className={classNames} style={style}>
-                    //     <img
-                    //         onLoad={measure}
-                    //         src={source}
-                    //         style={{
-                    //             width: imageWidth,
-                    //         }}
-                    //     />
-                    // </div>
                     <ListItem key={key} className={className} style={style}
+                        onClick={() => this.props.dispatch(routerRedux.push({
+                            pathname: `/coins/${row.id}`,
+                        }))}
                         extra={
                             <div>
                                 {`$${row.price_usd}`}<br />
@@ -69,7 +70,7 @@ class Market extends React.Component {
             </CellMeasurer>
 
         );
-    };
+    }
 
     _onSearch = (input) => {
         let coins;
@@ -90,10 +91,14 @@ class Market extends React.Component {
         }
         this.scrollToIndex = 0;
         this.props.dispatch({
-            type: 'market/updateState',
+            type: 'app/updateMarketState',
             payload: { coins }
         });
-    };
+    }
+
+    componentDidMount() {
+        console.log('Market did mount');
+    }
 
     componentWillUpdate(nextProps) {
         this.list = Immutable.List(nextProps.market.coins);
@@ -128,9 +133,4 @@ class Market extends React.Component {
     }
 }
 
-Market.propTypes = {
-    market: PropTypes.object,
-    dispatch: PropTypes.func,
-};
-
-export default connect(({ market }) => ({ market }))(Market);
+export default connect(({ app }) => ({ market: app.market }))(Market);

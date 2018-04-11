@@ -19,7 +19,7 @@ import { array } from 'prop-types';
 import styles from '../index.less';
 
 export default class ValueChart extends React.Component {
-    margin = { top: 20, right: 20, bottom: 30, left: 50 };
+    margin = { top: 20, right: 20, bottom: 40, left: 50 };
     width = 450 - this.margin.left - this.margin.right;
     height = 350 - this.margin.top - this.margin.bottom;
 
@@ -59,7 +59,7 @@ export default class ValueChart extends React.Component {
         d3.select(yAxisNode)
             .call(yAxis);
 
-        const yTitle = d3.select(yAxisNode).select('.title');
+        const yTitle = d3.select(yAxisNode).select(`.${styles.yTitle}`);
         if (!yTitle.nodes().length) {
             d3.select(yAxisNode)
                 .append("text")
@@ -67,11 +67,14 @@ export default class ValueChart extends React.Component {
                 .attr("transform", "rotate(-90)")
                 .attr("y", 6)
                 .attr("dy", ".71em")
-                .text("市值（￥）");
+                .text("单位（￥）");
         }
 
         d3.select(xAxisNode)
-            .call(xAxis);
+            .call(xAxis)
+            .selectAll("text")
+            .attr("transform", "rotate(-45)")
+            .style("text-anchor", "end");
     }
 
     updateD3(props) {
@@ -104,7 +107,7 @@ export default class ValueChart extends React.Component {
             .domain(yDomain)
             .range([this.height, 0]);
 
-        const xAxis = d3.axisBottom(xScale);
+        const xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat('%b %d'));
 
         const yAxis = d3.axisLeft(yScale).ticks(10, 's');
 

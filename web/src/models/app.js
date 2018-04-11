@@ -1,9 +1,10 @@
 /* global window */
 /* global document */
 import queryString from 'query-string';
-import { me, unauth } from '../services/api';
+import { me, unauth, my_coins, my_values, coins as coins_api } from '../services/api';
 import { routerRedux } from 'dva/router';
 import { UserNotFound } from '../utils/error';
+import lodash from 'lodash';
 
 export default {
 
@@ -13,16 +14,37 @@ export default {
         user: {},
         refererPathname: '',
         refererQuery: {},
+        dashboard: {
+            totalValue: -1,
+            totalInvest: 0,
+            coinList: [],
+            values: [],
+            invest: [],
+        },
+        market: {
+            coins: [],
+            coinsRaw: [],
+        }
     },
 
     subscriptions: {
 
         setupHistory({ dispatch, history }) {
             history.listen(location => {
+                const pathname = location.pathname;
+                console.log(pathname);
+                if (pathname === '/dashboard') {
+                    dispatch({ type: 'queryDashboard' });
+                } else if (pathname === '/market') {
+                    dispatch({ type: 'queryMarket' });
+                } else if (pathname === '/diamond') {
+                    dispatch({ type: 'queryDiamond' });
+                }
+
                 dispatch({
                     type: 'updateState',
                     payload: {
-                        refererPathname: location.pathname,
+                        refererPathname: pathname,
                         refererQuery: queryString.parse(location.search),
                     },
                 });
@@ -30,14 +52,15 @@ export default {
         },
 
         setup({ dispatch }) {
-            dispatch({ type: 'query' });
+            // when reload the special browser page
+            dispatch({ type: 'boot' });
         },
 
     },
 
     effects: {
 
-        * query(_, { call, put, select }) {
+        * boot(_, { call, put, select }) {
             const ret = yield call(me);
             const { refererPathname } = yield select(_ => _.app);
             if (ret.err) {
@@ -55,24 +78,95 @@ export default {
                 }
             } else {
                 const user = ret.data;
-                yield put({
-                    type: 'updateState',
-                    payload: { user },
-                });
+                yield put({ type: 'updateState', payload: { user } });
+
+                let { pathname } = window.location;
                 if (
-                    window.location.pathname === '/login'
-                    || window.location.pathname === '/register'
+                    pathname === '/'
+                    || pathname === '/login'
+                    || pathname === '/register'
+                    || pathname === '/dashboard'
                 ) {
-                    yield put(routerRedux.push({
-                        pathname: '/dashboard'
-                    }));
+                    yield put({ type: 'queryDashboard' });
+                } else if (pathname === '/market') {
+                    yield put({ type: 'queryMarket' });
+                } else if (pathname === '/diamond') {
+                    yield put({ type: 'queryDiamond' });
                 }
             }
         },
 
+        * queryDashboard(_, { call, put, select }) {
+            // if not login, do nothing
+            // query and redirect. if queried, redirect only
+            // if current location is self, do not redirect
+            const needRoute = window.location.pathname !== '/dashboard';
+            const router = routerRedux.push({ pathname: '/dashboard' });
+
+            const user = yield select(_ => _.app.user);
+            if (lodash.isEmpty(user)) return;
+
+            const dashboard = yield select(_ => _.app.dashboard);
+            if (dashboard.totalValue !== -1) {
+                if (needRoute) yield put(router);
+                return;
+            }
+
+            console.log('query dashboard data');
+            const myCoins = yield call(my_coins);
+            const myValues = yield call(my_values);
+            const coinList = myCoins.states;
+            const totalValue = coinList.reduce(
+                (accumulator, curVal) => accumulator + curVal.value_cny,
+                0
+            );
+            const values = myValues.map(datum => [datum[0] * 1000, datum[1]]);
+            yield put({
+                type: 'updateDashboardState',
+                payload: {
+                    values,
+                    totalValue,
+                    coinList,
+                },
+            });
+
+            if (needRoute) yield put(router);
+        },
+
+        * queryMarket(_, { call, put, select }) {
+            const needRoute = window.location.pathname !== '/market';
+            const router = routerRedux.push({ pathname: '/market' });
+
+            const user = yield select(_ => _.app.user);
+            if (lodash.isEmpty(user)) return;
+
+            const market = yield select(_ => _.app.market);
+            if (market.coinsRaw.length) {
+                if (needRoute) yield put(router);
+                return;
+            }
+
+            console.log('query market data');
+            const coinsRaw = yield call(coins_api);
+            const coins = coinsRaw;
+            yield put({
+                type: 'updateMarketState',
+                payload: { coins, coinsRaw },
+            });
+
+            if (needRoute) yield put(router);
+        },
+
+        * queryDiamond(_, { put }) {
+            const needRoute = window.location.pathname !== '/diamond';
+            const router = routerRedux.push({ pathname: '/diamond' });
+
+            if (needRoute) yield put(router);
+        },
+
         * logout(_, { call, put }) {
             yield call(unauth);
-            yield put({ type: 'query' })
+            yield put({ type: 'boot' })
         }
 
     },
@@ -83,6 +177,28 @@ export default {
             return {
                 ...state,
                 ...payload,
+            }
+        },
+
+        updateDashboardState(state, { payload }) {
+            const { dashboard, ...other } = state;
+            return {
+                ...other,
+                dashboard: {
+                    ...dashboard,
+                    ...payload,
+                },
+            }
+        },
+
+        updateMarketState(state, { payload }) {
+            const { market, ...other } = state;
+            return {
+                ...other,
+                market: {
+                    ...market,
+                    ...payload,
+                },
             }
         },
 

@@ -1,13 +1,14 @@
 import React from 'react';
 import { List } from 'antd-mobile';
 import PropTypes from 'prop-types';
+import { routerRedux } from 'dva/router';
 import { compactInteger } from '../../../utils/common';
 import styles from '../index.less';
 
 const Item = List.Item;
 const Brief = Item.Brief;
 
-const CoinList = ({ data }) => {
+const CoinList = ({ data, dispatch }) => {
     const _percentColor = (val) => {
         if (val > 0) {
             return styles.percentColorUp;
@@ -18,6 +19,9 @@ const CoinList = ({ data }) => {
     return (
         data.map((item, key) => (
             <Item
+                onClick={() => dispatch(routerRedux.push({
+                    pathname: `/coins/${item.coin.id}`,
+                }))}
                 key={key}
                 extra={
                     <div>
@@ -29,7 +33,7 @@ const CoinList = ({ data }) => {
                 multipleLine
                 thumb={`https://s2.coinmarketcap.com/static/img/coins/32x32/${item.coin.no}.png`}
             >
-                {item.coin.rank}. {item.coin.name} 
+                {item.coin.rank}. {item.coin.name}
                 <Brief>
                     持有 {item.amount} <br />
                     市值 ￥{compactInteger(item.value_cny, 2)}

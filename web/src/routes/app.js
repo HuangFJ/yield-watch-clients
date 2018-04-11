@@ -1,34 +1,54 @@
 /* global window */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withRouter, routerRedux } from 'dva/router';
+import { withRouter, Redirect, Route, Switch } from 'dva/router';
 import { connect } from 'dva';
 import { Loader } from '../components';
 import { Helmet } from 'react-helmet';
-import { TAB_PAGES } from '../constants';
 import { TabBar } from 'antd-mobile';
 import styles from './app.less';
+import Dashboard from './dashboard';
+import Market from './market';
+import Diamond from './diamond';
+import Login from './login';
+import Register from './register';
+import Coin from './coin';
 
-const App = ({ children, dispatch, app, loading, location }) => {
+class App extends React.Component {
 
-    let { pathname } = location;
-    pathname = pathname.startsWith('/') ? pathname : `/${pathname}`;
-    const isDashboard = pathname === '/dashboard';
-    const isMarket = pathname === '/market';
-    const isDiamond = pathname === '/diamond';
+    static propTypes = {
+        dva: PropTypes.object,
+        location: PropTypes.object,
+        dispatch: PropTypes.func,
+        app: PropTypes.object,
+        loading: PropTypes.object,
+    }
 
-    const isLoading = loading.effects['app/query']
-        || loading.effects['dashboard/query']
-        || loading.effects['market/query'];
+    componentDidMount() {
+        console.log('App did mount');
+    }
 
-    if (TAB_PAGES && TAB_PAGES.includes(pathname)) {
+    render() {
+        const { dispatch, app, loading, location } = this.props;
+
+        let { pathname } = location;
+        const isDashboard = pathname === '/dashboard';
+        const isMarket = pathname === '/market';
+        const isDiamond = pathname === '/diamond';
+
+        const isLoading = loading.effects['app/boot']
+            || loading.effects['app/queryDashboard']
+            || loading.effects['app/queryMarket']
+            || loading.effects['app/queryDiamond']
+            || loading.effects['coin/query'];
+
         return (
             <div>
-                <Loader fullScreen spinning={isLoading} />
                 <Helmet>
                     <title>{`Welcome! ${app.user.name || ''}`}</title>
                 </Helmet>
-                <div className={styles.tabsWrapper}>
+                <Loader fullScreen spinning={isLoading} />
+                <div className={styles.fullScreen}>
                     <TabBar
                         unselectedTintColor="#000"
                         tintColor="#7f00ff"
@@ -39,53 +59,45 @@ const App = ({ children, dispatch, app, loading, location }) => {
                             icon={<div className={styles.dashboardTab} />}
                             selectedIcon={<div className={styles.dashboardTabSelected} />}
                             selected={isDashboard}
-                            onPress={() => dispatch(routerRedux.push({
-                                pathname: '/dashboard'
-                            }))}
+                            onPress={() => dispatch({
+                                type: 'app/queryDashboard',
+                            })}
                         >
-                            {isDashboard ? children : null}
+                            <Dashboard />
                         </TabBar.Item>
                         <TabBar.Item
                             title="市场"
                             icon={<div className={styles.marketTab} />}
                             selectedIcon={<div className={styles.marketTabSelected} />}
                             selected={isMarket}
-                            onPress={() => dispatch(routerRedux.push({
-                                pathname: '/market'
-                            }))}
+                            onPress={() => dispatch({
+                                type: 'app/queryMarket',
+                            })}
                         >
-                            {isMarket ? children : null}
+                            <Market />
                         </TabBar.Item>
                         <TabBar.Item
                             title="探索"
                             icon={<div className={styles.diamondTab} />}
                             selectedIcon={<div className={styles.diamondTabSelected} />}
                             selected={isDiamond}
-                            onPress={() => dispatch(routerRedux.push({
-                                pathname: '/diamond'
-                            }))}
+                            onPress={() => dispatch({
+                                type: 'app/queryDiamond',
+                            })}
                         >
-                            {isDiamond ? children : null}
+                            <Diamond />
                         </TabBar.Item>
                     </TabBar>
                 </div>
-            </div>
-        );
-    } else {
-        return (
-            <div>
-                <Loader fullScreen spinning={isLoading} />
-                {children}
+                <Switch>
+                    <Route exact path="/" render={() => (<Redirect to="/dashboard" />)} />
+                    <Route exact path="/login" component={Login} />
+                    <Route exact path="/register" component={Register} />
+                    <Route path="/coins/:coinId" component={Coin} />
+                </Switch>
             </div>
         );
     }
-};
-
-App.propTypes = {
-    location: PropTypes.object,
-    dispatch: PropTypes.func,
-    app: PropTypes.object,
-    loading: PropTypes.object,
-};
+}
 
 export default withRouter(connect(({ app, loading }) => ({ app, loading }))(App));
