@@ -30,7 +30,7 @@ export default {
             });
             yield put({
                 type: 'app/updateDashboardState',
-                payload: { totalValue: -1 },
+                payload: { totalValue: -1, coinList: [] },
             });
         },
 
@@ -43,7 +43,7 @@ export default {
             });
             yield put({
                 type: 'app/updateDashboardState',
-                payload: { totalValue: -1 },
+                payload: { totalValue: -1, coinList: [] },
             });
             history.goBack();
         },
