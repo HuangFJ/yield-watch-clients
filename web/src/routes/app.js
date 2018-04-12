@@ -10,9 +10,7 @@ import styles from './app.less';
 import Dashboard from './dashboard';
 import Market from './market';
 import Diamond from './diamond';
-import Login from './login';
-import Register from './register';
-import Coin from './coin';
+import dynamic from 'dva/dynamic';
 
 class App extends React.Component {
 
@@ -23,6 +21,24 @@ class App extends React.Component {
         app: PropTypes.object,
         loading: PropTypes.object,
     }
+
+    _Login = dynamic({
+        app: this.props.dva,
+        models: () => [import('../models/login')],
+        component: () => import('./login')
+    })
+
+    _Register = dynamic({
+        app: this.props.dva,
+        models: () => [import('../models/register')],
+        component: () => import('./register')
+    })
+
+    _Coin = dynamic({
+        app: this.props.dva,
+        models: () => [import('../models/coin')],
+        component: () => import('./coin')
+    })
 
     componentDidMount() {
         console.log('App did mount');
@@ -91,9 +107,9 @@ class App extends React.Component {
                 </div>
                 <Switch>
                     <Route exact path="/" render={() => (<Redirect to="/dashboard" />)} />
-                    <Route exact path="/login" component={Login} />
-                    <Route exact path="/register" component={Register} />
-                    <Route path="/coins/:coinId" component={Coin} />
+                    <Route exact path="/login" component={this._Login} />
+                    <Route exact path="/register" component={this._Register} />
+                    <Route path="/coins/:coinId" component={this._Coin} />
                 </Switch>
             </div>
         );

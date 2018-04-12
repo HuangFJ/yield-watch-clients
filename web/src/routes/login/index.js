@@ -22,7 +22,7 @@ class Login extends React.Component {
             type: 'login/updateState',
             payload: { disabled: true },
         });
-    };
+    }
 
     requireAndValidMobile = async (strMobile) => {
         let err;
@@ -30,7 +30,7 @@ class Login extends React.Component {
         else if (!/\d{3} \d{4} \d{4}/g.test(strMobile)) err = '手机号格式错误。';
 
         return err ? Promise.reject({ message: err }) : strMobile.replace(/ /g, '');
-    };
+    }
 
     requireAndValidCode = async (strCode) => {
         let err;
@@ -38,7 +38,7 @@ class Login extends React.Component {
         else if (!/\d{4}/g.test(strCode)) err = '短信验证码格式错误。';
 
         return err ? Promise.reject({ message: err }) : +strCode; //alias of parseInt
-    };
+    }
 
     handleSms = () => this.props.form.validateFields((_, values) => {
         const { strMobile } = values;
@@ -50,7 +50,7 @@ class Login extends React.Component {
                 })
             )
             .catch(this.handleError);
-    });
+    })
 
     handleLogin = () => this.props.form.validateFields((_, values) => {
         const { strMobile, strCode } = values;
@@ -64,7 +64,7 @@ class Login extends React.Component {
                 })
             })
             .catch(this.handleError);
-    });
+    })
 
     handleMobileChange = (strMobile) => {
         this.requireAndValidMobile(strMobile)
@@ -76,7 +76,7 @@ class Login extends React.Component {
                 });
             })
             .catch(_ => this.handleError())
-    };
+    }
 
     handleCodeChange = (strCode) => {
         this.requireAndValidCode(strCode)
@@ -88,7 +88,11 @@ class Login extends React.Component {
                 });
             })
             .catch(_ => this.handleError())
-    };
+    }
+
+    componentDidMount(){
+        console.log('Login did mount');
+    }
 
     render() {
         const { login, loading } = this.props;
