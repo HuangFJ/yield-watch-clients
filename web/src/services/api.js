@@ -58,7 +58,28 @@ export function coins() {
     .catch(handleError);
 }
 
-export function coin({ id }) {
-  return request(`/coins/${id}`)
+export function coin({ coin_id }) {
+  return request(`/coins/${coin_id}`)
+    .catch(handleError);
+}
+
+export function get_coin_states({ coin_id }) {
+  return request(`/states/${coin_id}`)
+    .catch(handleError);
+}
+
+export function del_coin_state({ id }) {
+  return request(`/states`, {
+    method: 'DELETE',
+    json: { id },
+  })
+    .catch(handleError);
+}
+
+export function set_coin_state({ id, coin_id, amount, created }) {
+  return request(`/states`, {
+    method: 'PUT',
+    json: { id, coin_id, amount, created },
+  })
     .catch(handleError);
 }

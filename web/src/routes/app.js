@@ -109,7 +109,7 @@ class App extends React.Component {
                     <Route exact path="/" render={() => (<Redirect to="/dashboard" />)} />
                     <Route exact path="/login" component={this._Login} />
                     <Route exact path="/register" component={this._Register} />
-                    <Route path="/coins/:coinId" component={this._Coin} />
+                    <Route path="/coins/:coin_id" component={this._Coin} />
                 </Switch>
             </div>
         );

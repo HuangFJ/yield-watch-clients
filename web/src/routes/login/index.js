@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { List, InputItem, Button, Flex, Toast, Result } from 'antd-mobile';
+import { WingBlank, InputItem, Button, Flex, Toast, Result } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import { PropTypes } from 'prop-types';
 import { CountdownButton } from './components';
@@ -90,7 +90,7 @@ class Login extends React.Component {
             .catch(_ => this.handleError())
     }
 
-    componentDidMount(){
+    componentDidMount() {
         console.log('Login did mount');
     }
 
@@ -106,32 +106,26 @@ class Login extends React.Component {
                     img={<img src="images/yield.png" style={{ width: 60, height: 60 }} className="am-icon" alt="" />}
                     title="请先登录"
                 />
-                <List>
-                    <List.Item>
-                        {this.props.form.getFieldDecorator('strMobile')(
-                            <InputItem type="phone" onChange={this.handleMobileChange} placeholder="手机号码" />
-                        )}
-                    </List.Item>
-                    <List.Item>
-                        <Flex>
-                            <Flex.Item>
-                                {this.props.form.getFieldDecorator('strCode')(
-                                    <InputItem type="number" onChange={this.handleCodeChange} placeholder="短信验证码" />
-                                )}
-                            </Flex.Item>
-                            <Flex.Item>
-                                <CountdownButton type="primary" size="small" label="发送" interval={login.interval}
-                                    onClick={this.handleSms} loading={loading.effects['login/sms']} />
-                            </Flex.Item>
-                        </Flex>
+                <WingBlank>
+                    {this.props.form.getFieldDecorator('strMobile')(
+                        <InputItem type="phone" onChange={this.handleMobileChange} placeholder="手机号码" />
+                    )}
+                    <Flex>
+                        <Flex.Item>
+                            {this.props.form.getFieldDecorator('strCode')(
+                                <InputItem type="number" onChange={this.handleCodeChange} placeholder="短信验证码" />
+                            )}
+                        </Flex.Item>
+                        <Flex.Item>
+                            <CountdownButton type="primary" size="small" label="发送" interval={login.interval}
+                                onClick={this.handleSms} loading={loading.effects['login/sms']} />
+                        </Flex.Item>
+                    </Flex>
 
-                    </List.Item>
-                    <List.Item>
-                        <Button disabled={login.disabled} type="primary" onClick={this.handleLogin} loading={loading.effects['login/smsAuth']}>
-                            登录
+                    <Button disabled={login.disabled} type="primary" onClick={this.handleLogin} loading={loading.effects['login/smsAuth']}>
+                        登录
                     </Button>
-                    </List.Item>
-                </List>
+                </WingBlank>
             </div>
         )
     }
