@@ -136,26 +136,30 @@ class ValueDistribution extends React.Component {
         ]).mode('lch').colors(pied_data.length));
 
         // Let's start drawing the arcs.
-        const enteringArcs = this.art.selectAll(".wedge").data(pied_data).enter();
-        enteringArcs.append("path")
-            .attr("class", "wedge")
+        const updateArcs = this.art.selectAll(".wedge").data(pied_data);
+        updateArcs.exit().remove();
+        updateArcs.enter().append("path").attr("class", "wedge");
+        this.art.selectAll(".wedge")
             .attr("d", pied_arc)
             .style("fill", (d, i) => {
                 return pied_colors(i);
             });
 
         // Now we'll draw our label circles, lines and texts.
-        const enteringLabels = this.labels.selectAll(".label").data(pied_data).enter();
-        const labelGroups = enteringLabels.append("g").attr("class", "label");
-        labelGroups.append("circle")
-            .attr('class', "label-circle")
+        const updateLabels = this.labels.selectAll(".label").data(pied_data);
+        updateLabels.exit().remove();
+        const enterLabels = updateLabels.enter().append("g").attr("class", "label");
+        enterLabels.append("circle").attr('class', "label-circle");
+        enterLabels.append("line").attr('class', 'label-line');
+        enterLabels.append("text").attr('class', 'label-text');
+
+        this.labels.selectAll(".label-circle")
             .attr('r', 1)
             .attr('transform', (d, i) => {
                 return "translate(" + pied_arc.centroid(d) + ")";
             });
 
-        const textLines = labelGroups.append("line")
-            .attr('class', 'label-line')
+        const textLines = this.labels.selectAll(".label-line")
             .attr('x1', (d, i) => {
                 return pied_arc.centroid(d)[0];
             })
@@ -166,8 +170,7 @@ class ValueDistribution extends React.Component {
         const labelRadius = this.cDim.labelRadius;
         const labelSimulation = [];
 
-        const textLabels = labelGroups.append("text")
-            .attr('class', 'label-text')
+        const textLabels = this.labels.selectAll(".label-text")
             .text((d, i) => {
                 const centroid = pied_arc.centroid(d);
                 const midAngle = Math.atan2(centroid[1], centroid[0]);
