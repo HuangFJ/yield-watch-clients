@@ -226,14 +226,19 @@ export default {
         },
 
         updateInvest(state, { payload }) {
-            const totalInvest = payload.reduce(
-                (accumulator, curVal) => accumulator + curVal[1],
-                0
-            );
+            const { dashboard, ...other } = state;
+            const totalInvest = payload[payload.length - 1] ? payload[payload.length - 1][1] : 0;
             const invest = payload.map(datum => [datum[0] * 1000, datum[1], datum[2]]);
             const investRaw = invest.slice();
-            invest.unshift([new Date(), invest[0][1]]);
-            const { dashboard, ...other } = state;
+            const valueStartPoint = dashboard.values[0];
+            if (invest.length && valueStartPoint) {
+                if (invest[0][0] > valueStartPoint[0]) {
+                    // align start
+                    invest.unshift([valueStartPoint[0], 0]);
+                }
+                invest.push([new Date().getTime(), invest[invest.length - 1][1]]);
+            }
+            console.log('Invest data: ', invest)
             return {
                 ...other,
                 dashboard: {

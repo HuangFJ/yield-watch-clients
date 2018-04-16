@@ -9,15 +9,15 @@ class Diamond extends React.Component {
         diamond: PropTypes.object,
     }
 
-    componentDidMount(){
+    componentDidMount() {
         console.log('Diamond did mount');
     }
 
     render() {
         const { app } = this.props;
         return (
-            <div>
-                Hi, {app.user.name}, 准备好开始探索了吗？
+            <div style={{ textAlign: 'center', color: '#888', marginTop: 50 }}>
+                <p>Hi, {app.user.name}, 准备好开始探索了吗？</p>
             </div>
         );
     }

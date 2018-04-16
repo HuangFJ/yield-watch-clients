@@ -2,12 +2,13 @@ import React from 'react';
 import { connect } from 'dva';
 import { routerRedux, Switch, Route } from 'dva/router';
 import lodash from 'lodash';
-import { NavBar, List, Flex, SwipeAction, Icon, Button } from 'antd-mobile';
+import { NavBar, List, Flex, SwipeAction, Icon, Button, WhiteSpace } from 'antd-mobile';
 import { ValueChart } from '../dashboard/components';
 import { compactInteger } from '../../utils/common';
 import styles from '../app.less';
 import CoinState from './CoinState';
-import * as d3 from 'd3';
+import { timeFormat } from 'd3';
+import classNames from 'classnames';
 
 class Coin extends React.Component {
 
@@ -17,6 +18,11 @@ class Coin extends React.Component {
         } else if (val < 0) {
             return styles.changeColorDown;
         }
+    }
+
+    _fixNumber(val, precision) {
+        const power = 10 ** precision;
+        return Math.floor(val * power) / power;
     }
 
     componentWillMount() {
@@ -32,7 +38,7 @@ class Coin extends React.Component {
     }
 
     render() {
-        const { coin: { detail, coinState }, history, match, dispatch } = this.props;
+        const { coin: { detail, coinState }, history, match, dispatch, loading } = this.props;
         return (
             <div>
                 <div className={styles.flexPage}>
@@ -51,9 +57,12 @@ class Coin extends React.Component {
                                         <Flex direction="row" className={styles.coinStateGroup} >
                                             <Flex.Item className={styles.coinStateCell}>
                                                 <header>{detail.symbol}价格</header>
-                                                <p className={this._changeColor(detail.percent_change_1h)} style={{ fontSize: 24 }}>${detail.price_usd}</p>
+                                                <p className={this._changeColor(detail.percent_change_1h)} style={{ fontSize: 24 }}>
+                                                    ￥{this._fixNumber(detail.price_cny, 8)}
+                                                    <span style={{ fontSize: 12, marginLeft: 5 }}>${this._fixNumber(detail.price_usd, 8)}</span>
+                                                </p>
                                             </Flex.Item>
-                                            <Flex.Item className={styles.coinStateCell}>
+                                            <Flex.Item style={{ flex: '0 0 auto', width: '25%' }} className={styles.coinStateCell}>
                                                 <header>1H涨跌幅</header>
                                                 <p className={this._changeColor(detail.percent_change_1h)}>{detail.percent_change_1h}%</p>
                                             </Flex.Item>
@@ -67,7 +76,7 @@ class Coin extends React.Component {
                                                 <header>24H成交量</header>
                                                 <p>${compactInteger(detail.volume_usd, 2)}</p>
                                             </Flex.Item>
-                                            <Flex.Item className={styles.coinStateCell}>
+                                            <Flex.Item style={{ flex: '0 0 auto', width: '25%' }} className={styles.coinStateCell}>
                                                 <header>总市值</header>
                                                 <p>${compactInteger(detail.market_cap_usd, 2)}</p>
                                             </Flex.Item>
@@ -81,7 +90,14 @@ class Coin extends React.Component {
                                     </List.Item>
                                 </List>
 
-                                <List renderHeader={() => '持币变化'}>
+                                <List renderHeader={() => (
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <span style={{flex: 1}}>持币变化</span>
+                                        <Icon className={classNames({
+                                            [styles.hidden]: !loading.effects['coin/delCoinState']
+                                        })} type="loading" size="xxs" />
+                                    </div>
+                                )}>
                                     {!coinState.length ? null :
                                         coinState.map((row) => (
                                             <SwipeAction
@@ -102,7 +118,7 @@ class Coin extends React.Component {
                                                         pathname: `${match.url}/state/${row.id}`,
                                                     }))}
                                                 >
-                                                    {d3.timeFormat("%Y-%m-%d")(new Date(row.created * 1000))}
+                                                    {timeFormat("%Y-%m-%d")(new Date(row.created * 1000))}
                                                 </List.Item>
                                             </SwipeAction>
                                         ))
@@ -110,9 +126,10 @@ class Coin extends React.Component {
                                     <List.Item>
                                         <Button type="ghost" size="small" onClick={() => dispatch(routerRedux.push({
                                             pathname: `${match.url}/state/0`,
-                                        }))}>盘点</Button>
+                                        }))}>录入</Button>
                                     </List.Item>
                                 </List>
+                                <WhiteSpace size="xl" />
                             </div>
                         }
                     </div>
@@ -125,4 +142,4 @@ class Coin extends React.Component {
     }
 }
 
-export default connect(({ coin }) => ({ coin }))(Coin);
+export default connect(({ coin, loading }) => ({ coin, loading }))(Coin);

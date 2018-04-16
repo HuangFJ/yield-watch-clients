@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import PropTypes from 'prop-types';
 import { CoinList, ValueChart, ValueDistribution } from './components';
-import { List, Flex, WhiteSpace, Icon } from 'antd-mobile';
+import { List, Flex, WhiteSpace, Icon, Button } from 'antd-mobile';
 import styles from './index.less';
 import { compactInteger } from '../../utils/common';
 
@@ -20,8 +20,6 @@ class Dashboard extends React.Component {
     render() {
         const { dashboard, dispatch } = this.props;
 
-        const emptyListItem = <List.Item className={styles.emptyListItem}>暂无数据</List.Item>;
-
         return (
             <div>
                 <List className={styles.summary}>
@@ -33,7 +31,7 @@ class Dashboard extends React.Component {
                         <Flex.Item className={styles.cell}>
                             <header>净入金(元)</header>
                             <p>
-                                <a style={{ display: 'flex' }} onClick={() => this.props.dispatch(routerRedux.push({
+                                <a style={{ display: 'flex', alignItems: 'center' }} onClick={() => this.props.dispatch(routerRedux.push({
                                     pathname: `/balance`,
                                 }))}>
                                     <span style={{ flex: 1 }}>{compactInteger(dashboard.totalInvest, 3)}</span>
@@ -43,28 +41,30 @@ class Dashboard extends React.Component {
                         </Flex.Item>
                     </Flex>
                 </List>
-                <List renderHeader={() => '资产市值变化'} className={styles.values}>
-                    {dashboard.values.length ?
-                        <List.Item>
-                            <ValueChart dataValue={dashboard.values} dataInvest={dashboard.invest} />
-                        </List.Item>
-                        : emptyListItem
-                    }
-                </List>
-                <List renderHeader={() => '资产结构'} className={styles.distribution}>
-                    {dashboard.coinList.length ?
-                        <List.Item>
-                            <ValueDistribution data={dashboard.coinList} />
-                        </List.Item>
-                        : emptyListItem
-                    }
-                </List>
-                <List renderHeader={() => '资产列表'} className={styles.assets}>
-                    {dashboard.coinList.length ?
-                        <CoinList data={dashboard.coinList} dispatch={dispatch} />
-                        : emptyListItem
-                    }
-                </List>
+                {dashboard.values.length ?
+                    <div>
+                        <List renderHeader={() => '资产市值变化'} className={styles.values}>
+                            <List.Item>
+                                <ValueChart dataValue={dashboard.values} dataInvest={dashboard.invest} />
+                            </List.Item>
+                        </List>
+                        <List renderHeader={() => '资产结构'} className={styles.distribution}>
+                            <List.Item>
+                                <ValueDistribution data={dashboard.coinList} />
+                            </List.Item>
+                        </List>
+                        <List renderHeader={() => '资产列表'} className={styles.assets}>
+                            <CoinList data={dashboard.coinList} dispatch={dispatch} />
+                        </List>
+                    </div>
+                    : <div style={{ textAlign: 'center', color: '#888', marginTop: 50 }}>
+                        <p>你还没有添加任何资产</p>
+                        <p style={{ display: 'flex', alignItems: 'center', justifyContent:'center' }}>
+                            现在就去<Button type="ghost" size="small" onClick={() => dispatch(routerRedux.push({
+                                pathname: `/market`,
+                            }))}>市场</Button>查找资产并录入盘点数量</p>
+                    </div>
+                }
                 <WhiteSpace size="xl" />
             </div>
         )

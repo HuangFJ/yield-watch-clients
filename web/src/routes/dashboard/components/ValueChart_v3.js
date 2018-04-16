@@ -17,6 +17,7 @@ import React from 'react';
 import * as d3 from 'd3';
 import { array } from 'prop-types';
 import styles from '../index.less';
+import lodash from 'lodash';
 
 export default class ValueChart extends React.Component {
     margin = { top: 20, right: 20, bottom: 40, left: 50 };
@@ -30,7 +31,7 @@ export default class ValueChart extends React.Component {
 
     constructor(props) {
         super(props);
-
+        this.id = lodash.random(0, 10000);
         this.state = {};
     }
 
@@ -161,19 +162,19 @@ export default class ValueChart extends React.Component {
             <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`}>
                 <g transform={`translate(${this.margin.left},${this.margin.top})`}>
                     <defs>
-                        <clipPath id="potentialValueSpace">
+                        <clipPath id={`potentialValueSpace-${this.id}`}>
                             <path d={potentialValueSpace(dataValue)} />
                         </clipPath>
                         {dataInvest && dataInvest.length ?
-                            <clipPath id="potentialInvestSpace">
+                            <clipPath id={`potentialInvestSpace-${this.id}`}>
                                 <path d={potentialInvestSpace(dataInvest)} />
                             </clipPath>
                             : null
                         }
                     </defs>
-                    <path className={styles.valueArea} clipPath="url(#potentialInvestSpace)" d={valueSpace(dataValue)} />
+                    <path className={styles.valueArea} clipPath={`url(#potentialInvestSpace-${this.id})`} d={valueSpace(dataValue)} />
                     {dataInvest && dataInvest.length ?
-                        <path className={styles.investArea} clipPath="url(#potentialValueSpace)" d={investSpace(dataInvest)} />
+                        <path className={styles.investArea} clipPath={`url(#potentialValueSpace-${this.id})`} d={investSpace(dataInvest)} />
                         : null
                     }
 

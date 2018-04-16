@@ -3,8 +3,9 @@ import { connect } from 'dva';
 import { routerRedux, Switch, Route } from 'dva/router';
 import { NavBar, List, Flex, SwipeAction, Icon, Button } from 'antd-mobile';
 import styles from '../app.less';
-import * as d3 from 'd3';
+import { timeFormat } from 'd3';
 import Detail from './Detail';
+import classNames from 'classnames';
 
 class Balance extends React.Component {
 
@@ -13,7 +14,7 @@ class Balance extends React.Component {
     }
 
     render() {
-        const { invest, history, match, dispatch } = this.props;
+        const { invest, history, match, dispatch, loading } = this.props;
         return (
             <div>
                 <div className={styles.flexPage}>
@@ -25,7 +26,14 @@ class Balance extends React.Component {
                         </NavBar>
                     </div>
                     <div className={styles.body}>
-                        <List renderHeader={() => '净入金为累计入金减去累计出金，可以是负值。'}>
+                        <List renderHeader={() => (
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <span style={{flex: 1}}>净入金为累计入金减去累计出金，可以是负值。</span>
+                                <Icon className={classNames({
+                                    [styles.hidden]: !loading.effects['app/delBalance']
+                                })} type="loading" size="xxs" />
+                            </div>
+                        )}>
                             {!invest.length ? null :
                                 invest.map((row) => (
                                     <SwipeAction
@@ -41,12 +49,12 @@ class Balance extends React.Component {
                                             },
                                             style: { backgroundColor: 'red', color: 'white' },
                                         }]}>
-                                        <List.Item key={row[2]} extra={`${row[1]}`}
+                                        <List.Item key={row[2]} extra={`￥${row[1]}`}
                                             onClick={() => dispatch(routerRedux.push({
                                                 pathname: `${match.url}/${row[2]}`,
                                             }))}
                                         >
-                                            {d3.timeFormat("%Y-%m-%d")(new Date(row[0]))}
+                                            {timeFormat("%Y-%m-%d")(new Date(row[0]))}
                                         </List.Item>
                                     </SwipeAction>
                                 ))
@@ -54,7 +62,7 @@ class Balance extends React.Component {
                             <List.Item>
                                 <Button type="ghost" size="small" onClick={() => dispatch(routerRedux.push({
                                     pathname: `${match.url}/0`,
-                                }))}>结算</Button>
+                                }))}>录入</Button>
                             </List.Item>
                         </List>
                     </div>
@@ -67,4 +75,4 @@ class Balance extends React.Component {
     }
 }
 
-export default connect(({ app }) => ({ invest: app.dashboard.investRaw }))(Balance);
+export default connect(({ app, loading }) => ({ invest: app.dashboard.investRaw, loading }))(Balance);

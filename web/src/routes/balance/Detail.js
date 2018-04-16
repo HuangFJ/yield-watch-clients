@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { NavBar, List, Flex, InputItem, DatePicker, Button, Toast, Icon } from 'antd-mobile';
+import { timeFormat } from 'd3';
 import styles from '../app.less';
 
 class Detail extends React.Component {
@@ -11,7 +12,7 @@ class Detail extends React.Component {
         amount = +amount;
 
         if (!amount) {
-            Toast.fail("请输入金额！");
+            Toast.fail("请输入正确的金额！");
             return;
         }
 
@@ -56,17 +57,23 @@ class Detail extends React.Component {
                 </div>
                 <div className={styles.body}>
                     <List>
-                        <DatePicker
-                            maxDate={new Date()}
-                            mode="date"
-                            title="选择日期"
-                            value={date}
-                            onChange={date => this.setState({ date })}
-                        >
-                            <List.Item>日期</List.Item>
-                        </DatePicker>
                         <InputItem
-                            type="money"
+                            placeholder="选择日期"
+                            value={timeFormat('%Y-%m-%d')(date)}
+                            editable={false}
+                            extra={
+                                <DatePicker
+                                    maxDate={new Date()}
+                                    mode="date"
+                                    title="选择日期"
+                                    value={date}
+                                    onChange={date => this.setState({ date })}
+                                >
+                                    <div className={styles.iconCalender} />
+                                </DatePicker>
+                            }
+                        >日期</InputItem>
+                        <InputItem
                             placeholder="净入金"
                             value={amount}
                             onChange={amount => this.setState({ amount })}
