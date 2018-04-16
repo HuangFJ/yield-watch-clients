@@ -83,3 +83,19 @@ export function set_coin_state({ id, coin_id, amount, created }) {
   })
     .catch(handleError);
 }
+
+export function del_balance(payload) {
+  return request(`/balance`, {
+    method: 'DELETE',
+    json: { id: payload[2] },
+  })
+    .catch(handleError);
+}
+
+export function set_balance({ id, amount, created }) {
+  return request(`/balance`, {
+    method: 'PUT',
+    json: { id, amount, created },
+  })
+    .catch(handleError);
+}

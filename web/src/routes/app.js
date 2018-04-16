@@ -40,6 +40,11 @@ class App extends React.Component {
         component: () => import('./coin')
     })
 
+    _Balance = dynamic({
+        app: this.props.dva,
+        component: () => import('./balance')
+    })
+
     componentDidMount() {
         console.log('App did mount');
     }
@@ -110,6 +115,7 @@ class App extends React.Component {
                     <Route exact path="/login" component={this._Login} />
                     <Route exact path="/register" component={this._Register} />
                     <Route path="/coins/:coin_id" component={this._Coin} />
+                    <Route path="/balance" component={this._Balance} />
                 </Switch>
             </div>
         );

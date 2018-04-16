@@ -1,7 +1,7 @@
 /* global window */
 /* global document */
 import queryString from 'query-string';
-import { me, unauth, my_coins, my_values, coins as coins_api } from '../services/api';
+import { me, unauth, my_coins, my_values, coins as coins_api, set_balance, del_balance } from '../services/api';
 import { routerRedux } from 'dva/router';
 import { UserNotFound } from '../utils/error';
 import lodash from 'lodash';
@@ -20,6 +20,7 @@ export default {
             coinList: [],
             values: [],
             invest: [],
+            investRaw: [],
         },
         market: {
             coins: [],
@@ -129,6 +130,10 @@ export default {
                     coinList,
                 },
             });
+            yield put({
+                type: 'updateInvest',
+                payload: myCoins.balance,
+            });
 
             if (needRoute) yield put(router);
         },
@@ -167,7 +172,25 @@ export default {
         * logout(_, { call, put }) {
             yield call(unauth);
             yield put({ type: 'boot' })
-        }
+        },
+
+        * delBalance({ payload }, { put, call, select }) {
+            yield call(del_balance, payload);
+            const myCoins = yield call(my_coins);
+            yield put({
+                type: 'updateInvest',
+                payload: myCoins.balance,
+            });
+        },
+
+        * setBalance({ payload }, { put, call }) {
+            yield call(set_balance, payload);
+            const myCoins = yield call(my_coins);
+            yield put({
+                type: 'updateInvest',
+                payload: myCoins.balance,
+            });
+        },
 
     },
 
@@ -198,6 +221,26 @@ export default {
                 market: {
                     ...market,
                     ...payload,
+                },
+            }
+        },
+
+        updateInvest(state, { payload }) {
+            const totalInvest = payload.reduce(
+                (accumulator, curVal) => accumulator + curVal[1],
+                0
+            );
+            const invest = payload.map(datum => [datum[0] * 1000, datum[1], datum[2]]);
+            const investRaw = invest.slice();
+            invest.unshift([new Date(), invest[0][1]]);
+            const { dashboard, ...other } = state;
+            return {
+                ...other,
+                dashboard: {
+                    ...dashboard,
+                    totalInvest,
+                    invest,
+                    investRaw
                 },
             }
         },

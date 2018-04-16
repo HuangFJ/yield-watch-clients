@@ -34,9 +34,9 @@ export default {
             });
         },
 
-        * setCoinState({ payload: { history, ...data } }, { put, call }) {
-            yield call(set_coin_state, data);
-            const coinState = yield call(get_coin_states, data);
+        * setCoinState({ payload }, { put, call }) {
+            yield call(set_coin_state, payload);
+            const coinState = yield call(get_coin_states, payload);
             yield put({
                 type: 'updateState',
                 payload: { coinState },
@@ -45,7 +45,6 @@ export default {
                 type: 'app/updateDashboardState',
                 payload: { totalValue: -1, coinList: [] },
             });
-            history.goBack();
         },
 
     },

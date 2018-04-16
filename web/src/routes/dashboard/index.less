@@ -1,29 +1,57 @@
 @import "../../assets/common.less";
-
 .emptyListItem {
-     :global(.am-list-line) {
-         :global(.am-list-content) {
+    :global(.am-list-line) {
+        :global(.am-list-content) {
             text-align: center;
         }
     }
 }
 
-.summary {}
+.summary {
+    .group {
+        padding: 30px 0;
+        .cell {
+            * {
+                margin: 0;
+            }
+            header {
+                font-size: 14px;
+                color: #888;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+            p {
+                font-size: 24px;
+                text-align: center;
+                a {
+                    color: black;
+                }
+                a:link {
+                    color: black;
+                }
+            }
+        }
+        .cell+.cell {
+            padding-left: 15px;
+            border-left: 1px solid #ddd;
+        }
+    }
+}
 
 .values {}
 
 .distribution {
-     :global(.label-text) {
+    :global(.label-text) {
         alignment-baseline: middle;
         font-size: 12px;
-        fill:@color-oxford-blue;
+        fill: @color-oxford-blue;
     }
-     :global(.label-line) {
+    :global(.label-line) {
         stroke-width: 1;
         stroke: @color-oxford-blue;
     }
-     :global(.label-circle) {
-        fill:@color-oxford-blue;
+    :global(.label-circle) {
+        fill: @color-oxford-blue;
     }
 }
 
@@ -43,14 +71,14 @@
     color: @color-vermilion-dark;
 }
 
-.yTitle{
+.yTitle {
     fill: @color-rich-black;
 }
 
-.valueArea{
-    fill:@color-bleu-de-france-light; 
+.valueArea {
+    fill: @color-bleu-de-france-light;
 }
 
-.investArea{
+.investArea {
     fill: @color-vermilion-light;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { WingBlank, InputItem, Button, Flex, Toast, Result } from 'antd-mobile';
+import { InputItem, Button, Toast, Result, Icon, Flex } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import { PropTypes } from 'prop-types';
 import { CountdownButton } from './components';
@@ -98,34 +98,32 @@ class Login extends React.Component {
         const { login, loading } = this.props;
 
         return (
-            <div className={styles.fullScreen}>
+            <div className={styles.flexPage}>
                 <Helmet>
                     <title>You need login!</title>
                 </Helmet>
-                <Result
-                    img={<img src="images/yield.png" style={{ width: 60, height: 60 }} className="am-icon" alt="" />}
-                    title="请先登录"
-                />
-                <WingBlank>
+                <div className={styles.body}>
+                    <Result
+                        img={<img src="images/yield.png" style={{ width: 60, height: 60 }} className="am-icon" alt="" />}
+                        title="请先登录" />
                     {this.props.form.getFieldDecorator('strMobile')(
                         <InputItem type="phone" onChange={this.handleMobileChange} placeholder="手机号码" />
                     )}
-                    <Flex>
-                        <Flex.Item>
-                            {this.props.form.getFieldDecorator('strCode')(
-                                <InputItem type="number" onChange={this.handleCodeChange} placeholder="短信验证码" />
-                            )}
-                        </Flex.Item>
-                        <Flex.Item>
-                            <CountdownButton type="primary" size="small" label="发送" interval={login.interval}
-                                onClick={this.handleSms} loading={loading.effects['login/sms']} />
-                        </Flex.Item>
-                    </Flex>
-
-                    <Button disabled={login.disabled} type="primary" onClick={this.handleLogin} loading={loading.effects['login/smsAuth']}>
-                        登录
+                    {this.props.form.getFieldDecorator('strCode')(
+                        <InputItem type="number" onChange={this.handleCodeChange} placeholder="短信验证码"
+                            extra={
+                                <CountdownButton inline type="ghost" size="small" label="发送短信"
+                                    className={styles.sendSmsBtn} interval={login.interval}
+                                    onClick={this.handleSms} loading={loading.effects['login/sms']} />
+                            } />
+                    )}
+                </div>
+                <div className={styles.foot}>
+                    <Button disabled={login.disabled} type="ghost" onClick={this.handleLogin}
+                        loading={loading.effects['login/smsAuth']}>
+                        <Flex style={{ justifyContent: 'center' }}>登录<Icon type="right" /></Flex>
                     </Button>
-                </WingBlank>
+                </div>
             </div>
         )
     }

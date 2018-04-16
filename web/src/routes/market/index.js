@@ -55,15 +55,14 @@ class Market extends React.Component {
                         extra={
                             <div>
                                 {`$${row.price_usd}`}<br />
-                                <span className={this._percentColor(row.percent_change_24h)}>{`${row.percent_change_24h}%`}</span>
+                                <span className={this._percentColor(row.percent_change_1h)}>{`${row.percent_change_1h}%`}</span>
                             </div>
                         }
                         align="top"
                         thumb={`https://s2.coinmarketcap.com/static/img/coins/32x32/${row.no}.png`} multipleLine>
                         {row.rank}. {row.name}
                         <ListItem.Brief>
-                            市值 ${compactInteger(row.market_cap_usd, 3)}<br />
-                            24H成交 ${compactInteger(row.volume_usd, 3)}
+                            总市值 ${compactInteger(row.market_cap_usd, 3)}<br />
                         </ListItem.Brief>
                     </ListItem>
                 )}
@@ -107,10 +106,10 @@ class Market extends React.Component {
     render() {
         return (
             <Flex direction="column" style={{ width: '100%', height: '100%' }}>
-                <Flex.Item style={{ flex: 0, width: '100%' }}>
+                <div style={{ flex: 0, width: '100%' }}>
                     <SearchBar placeholder="Search" maxLength={8} className={styles.SearchBar} onChange={this._onSearch} />
-                </Flex.Item>
-                <Flex.Item style={{ width: '100%', height: '100%' }}>
+                </div>
+                <div style={{ flex: 1, width: '100%', height: '100%' }}>
                     <AutoSizer>
                         {({ width, height }) => (
                             <AMList className={styles.ScrollList}>
@@ -127,7 +126,7 @@ class Market extends React.Component {
                             </AMList>
                         )}
                     </AutoSizer>
-                </Flex.Item>
+                </div>
             </Flex>
         );
     }
