@@ -12,7 +12,6 @@ import * as d3 from 'd3';
 import { array } from 'prop-types';
 import { withFauxDOM } from 'react-faux-dom'
 import { compactInteger } from '../../../utils/common';
-import * as chroma from 'chroma-js';
 
 function collide(arr) {
     const alpha = 3;
@@ -130,10 +129,10 @@ class ValueDistribution extends React.Component {
             .outerRadius(this.cDim.outerRadius);
 
         // This is an ordinal scale that returns 10 predefined colors.
-        const pied_colors = d3.scaleOrdinal(chroma.scale([
-            'rgb(255, 204, 77)',
-            'rgb(84, 163, 242)',
-        ]).mode('lch').colors(pied_data.length));
+        const pied_colors = d3.scaleLinear()
+            .domain([1, pied_data.length])
+            .interpolate(d3.interpolateHcl)
+            .range([d3.rgb("#007AFF"), d3.rgb('#FFF500')]);
 
         // Let's start drawing the arcs.
         const updateArcs = this.art.selectAll(".wedge").data(pied_data);

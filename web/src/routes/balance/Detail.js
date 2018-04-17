@@ -26,6 +26,12 @@ class Detail extends React.Component {
         }).then(() => this.props.history.goBack());
     }
 
+    get _defaultDate() {
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        return date;
+    }
+
     _calc = (props) => {
         const { match, invest } = props;
         const id = +match.params.id;
@@ -39,7 +45,7 @@ class Detail extends React.Component {
             this.state.date
             : data[0] ?
                 new Date(data[0])
-                : new Date();
+                : this._defaultDate;
 
         return { id, amount, date }
     }
@@ -63,7 +69,7 @@ class Detail extends React.Component {
                             editable={false}
                             extra={
                                 <DatePicker
-                                    maxDate={new Date()}
+                                    maxDate={this._defaultDate}
                                     mode="date"
                                     title="选择日期"
                                     value={date}

@@ -27,6 +27,12 @@ class CoinState extends React.Component {
         }).then(() => this.props.history.goBack());
     }
 
+    get _defaultDate() {
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        return date;
+    }
+
     _calc = (props) => {
         const { match, coin } = props;
         const id = +match.params.id;
@@ -41,7 +47,7 @@ class CoinState extends React.Component {
             this.state.date
             : data.created ?
                 new Date(data.created * 1000)
-                : new Date();
+                : this._defaultDate;
 
         return { id, coin_id, amount, date }
     }
@@ -65,7 +71,7 @@ class CoinState extends React.Component {
                             editable={false}
                             extra={
                                 <DatePicker
-                                    maxDate={new Date()}
+                                    maxDate={this._defaultDate}
                                     mode="date"
                                     title="选择日期"
                                     value={date}
