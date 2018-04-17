@@ -58,8 +58,8 @@ class Coin extends React.Component {
                                             <Flex.Item className={styles.coinStateCell}>
                                                 <header>{detail.symbol}价格</header>
                                                 <p className={this._changeColor(detail.percent_change_1h)} style={{ fontSize: 24 }}>
-                                                    ￥{this._fixNumber(detail.price_cny, 8)}
-                                                    <span style={{ fontSize: 12, marginLeft: 5 }}>${this._fixNumber(detail.price_usd, 8)}</span>
+                                                    ￥{this._fixNumber(detail.price_cny, 6)}
+                                                    <span style={{ fontSize: 12, marginLeft: 5 }}>${this._fixNumber(detail.price_usd, 6)}</span>
                                                 </p>
                                             </Flex.Item>
                                             <Flex.Item style={{ flex: '0 0 auto', width: '25%' }} className={styles.coinStateCell}>

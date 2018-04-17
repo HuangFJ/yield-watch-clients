@@ -12,6 +12,10 @@ import Market from './market';
 import Diamond from './diamond';
 import dynamic from 'dva/dynamic';
 
+dynamic.setDefaultLoadingComponent(() => {
+    return <Loader fullScreen spinning={true} />;
+});
+
 class App extends React.Component {
 
     static propTypes = {
