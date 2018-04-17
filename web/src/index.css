@@ -4,10 +4,6 @@ body,
     height: 100%;
 }
 
-:global(.am-tabs-pane-wrap-active) {
-    height: 100% !important;
-}
-
 :global(.am-button-ghost),
 :global(.am-button-ghost:before) {
     border: none !important;

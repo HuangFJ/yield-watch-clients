@@ -105,11 +105,11 @@ class Market extends React.Component {
 
     render() {
         return (
-            <Flex direction="column" style={{ width: '100%', height: '100%' }}>
+            <Flex direction="column" style={{ width: '100%', height: '100%', position: 'absolute' }}>
                 <div style={{ flex: 0, width: '100%' }}>
                     <SearchBar placeholder="Search" maxLength={8} className={styles.SearchBar} onChange={this._onSearch} />
                 </div>
-                <div style={{ flex: 1, width: '100%', height: '100%' }}>
+                <div style={{ flex: 1, width: '100%' }}>
                     <AutoSizer>
                         {({ width, height }) => (
                             <AMList className={styles.ScrollList}>
