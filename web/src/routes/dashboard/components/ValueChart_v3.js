@@ -19,6 +19,13 @@ import { array } from 'prop-types';
 import styles from '../index.less';
 import lodash from 'lodash';
 
+d3.formatDefaultLocale({
+    "decimal": ".",
+    "thousands": ",",
+    "grouping": [3],
+    "currency": ["¥", ""]
+});
+
 export default class ValueChart extends React.Component {
     margin = { top: 20, right: 20, bottom: 40, left: 50 };
     width = 450 - this.margin.left - this.margin.right;
@@ -35,7 +42,7 @@ export default class ValueChart extends React.Component {
         this.state = {};
     }
 
-    componentWillMount(){
+    componentWillMount() {
         this.updateD3(this.props);
     }
 
@@ -62,13 +69,21 @@ export default class ValueChart extends React.Component {
 
         const yTitle = d3.select(yAxisNode).select(`.${styles.yTitle}`);
         if (!yTitle.nodes().length) {
-            d3.select(yAxisNode)
-                .append("text")
-                .attr('class', styles.yTitle)
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .text("单位（￥）");
+            d3.select(yAxisNode).append("text").attr('class', styles.yTitle).attr('text-anchor', 'start')
+                .attr("transform", "translate(10, 0)")
+                .text("G 10⁹");
+            d3.select(yAxisNode).append("text").attr('class', styles.yTitle).attr('text-anchor', 'start')
+                .attr("transform", "translate(10, 15)")
+                .text("M 10⁶");
+            d3.select(yAxisNode).append("text").attr('class', styles.yTitle).attr('text-anchor', 'start')
+                .attr("transform", "translate(10, 30)")
+                .text("k 10³");
+            d3.select(yAxisNode).append("text").attr('class', styles.yTitle).attr('text-anchor', 'start')
+                .attr("transform", "translate(10, 45)")
+                .text("m 10⁻³");
+            d3.select(yAxisNode).append("text").attr('class', styles.yTitle).attr('text-anchor', 'start')
+                .attr("transform", "translate(10, 60)")
+                .text("μ 10⁻⁶");
         }
 
         d3.select(xAxisNode)
@@ -108,9 +123,9 @@ export default class ValueChart extends React.Component {
             .domain(yDomain)
             .range([this.height, 0]);
 
-        const xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat('%b %d'));
+        const xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%y/%m/%d"));
 
-        const yAxis = d3.axisLeft(yScale).ticks(10, 's');
+        const yAxis = d3.axisLeft(yScale).ticks(10, '$s');
 
         const valueSpace = d3.area()
             .x(datum => xScale(datum[0]))
