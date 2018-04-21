@@ -55,7 +55,7 @@ class Market extends React.Component {
                         extra={
                             <div>
                                 {`$${row.price_usd}`}<br />
-                                <span className={this._percentColor(row.percent_change_1h)}>{`${row.percent_change_1h}%`}</span>
+                                <span className={this._percentColor(row.percent_change_24h)}>{`${row.percent_change_24h}%`}</span>
                             </div>
                         }
                         align="top"

@@ -63,14 +63,14 @@ class Coin extends React.Component {
                                                 </p>
                                             </Flex.Item>
                                             <Flex.Item style={{ flex: '0 0 auto', width: '25%' }} className={styles.coinStateCell}>
-                                                <header>1H涨跌幅</header>
-                                                <p className={this._changeColor(detail.percent_change_1h)}>{detail.percent_change_1h}%</p>
+                                                <header>24H涨跌幅</header>
+                                                <p className={this._changeColor(detail.percent_change_24h)}>{detail.percent_change_24h}%</p>
                                             </Flex.Item>
                                         </Flex>
                                         <Flex direction="row" className={styles.coinStateGroup}>
                                             <Flex.Item className={styles.coinStateCell}>
-                                                <header>24H涨跌幅</header>
-                                                <p className={this._changeColor(detail.percent_change_24h)}>{detail.percent_change_24h}%</p>
+                                                <header>1H涨跌幅</header>
+                                                <p className={this._changeColor(detail.percent_change_1h)}>{detail.percent_change_1h}%</p>
                                             </Flex.Item>
                                             <Flex.Item className={styles.coinStateCell}>
                                                 <header>24H成交量</header>
