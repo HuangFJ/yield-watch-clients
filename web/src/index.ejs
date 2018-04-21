@@ -1,3 +1,4 @@
+<% htmlWebpackPlugin.options.headScripts = htmlWebpackPlugin.options.headScripts || [] %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,15 +8,15 @@
   <!-- set `maximum-scale` for some compatibility issues -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
   <title>Yield Watch</title>
-  <link rel="stylesheet" href="index.css" />
+  <% for (item of htmlWebpackPlugin.options.headScripts) { %>
+    <script src="<%= item %>"></script>
+  <% } %>
 </head>
 
 <body>
-
   <div id="root"></div>
-  <script src="index.js"></script>
-
 </body>
+
 <script src="https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js"></script>
 <script>
   if ('addEventListener' in document) {
