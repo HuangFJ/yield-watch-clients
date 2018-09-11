@@ -21,7 +21,7 @@ class Dashboard extends React.Component {
         const { dashboard, dispatch } = this.props;
 
         return (
-            <div>
+            <div className={styles.tabContent}>
                 <List className={styles.summary}>
                     <Flex className={styles.group}>
                         <Flex.Item className={styles.cell}>

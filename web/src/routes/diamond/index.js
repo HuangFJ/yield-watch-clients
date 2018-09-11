@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
+import styles from './index.less';
 
 class Diamond extends React.Component {
 
@@ -16,7 +17,7 @@ class Diamond extends React.Component {
     render() {
         const { app } = this.props;
         return (
-            <div style={{ textAlign: 'center', color: '#888', marginTop: 50 }}>
+            <div className={styles.tabContent}>
                 <p>Hi, {app.user.name}, 准备好开始探索了吗？</p>
             </div>
         );
