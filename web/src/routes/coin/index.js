@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'dva';
-import { routerRedux, Switch, Route } from 'dva/router';
+import { Switch, Route } from 'dva/router';
 import lodash from 'lodash';
-import { NavBar, List, Flex, SwipeAction, Icon, Button, WhiteSpace } from 'antd-mobile';
+import { NavBar, List, Flex, Icon, WhiteSpace } from 'antd-mobile';
 import { ValueChart } from '../dashboard/components';
 import { compactInteger } from '../../utils/common';
 import styles from '../app.less';
 import CoinState from './CoinState';
-import { timeFormat } from 'd3';
-import classNames from 'classnames';
+import CoinTrigger from './CoinTrigger';
+import ListState from './ListState';
+import ListTrigger from './ListTrigger';
 
 class Coin extends React.Component {
 
@@ -38,7 +39,8 @@ class Coin extends React.Component {
     }
 
     render() {
-        const { coin: { detail, coinState }, history, match, dispatch, loading } = this.props;
+        const { coin: { detail, coinState, trigger }, history, match, dispatch, loading } = this.props;
+
         return (
             <div>
                 <div className={styles.flexPage}>
@@ -83,52 +85,17 @@ class Coin extends React.Component {
                                         </Flex>
                                     </Flex>
                                 </List>
-
+                                
                                 <List renderHeader={() => '价格变化'}>
                                     <List.Item>
                                         <ValueChart dataValue={detail.history} />
                                     </List.Item>
                                 </List>
 
-                                <List renderHeader={() => (
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <span style={{flex: 1}}>持币变化</span>
-                                        <Icon className={classNames({
-                                            [styles.hidden]: !loading.effects['coin/delCoinState']
-                                        })} type="loading" size="xxs" />
-                                    </div>
-                                )}>
-                                    {!coinState.length ? null :
-                                        coinState.map((row) => (
-                                            <SwipeAction
-                                                key={row.id}
-                                                autoClose
-                                                right={[{
-                                                    text: '删除',
-                                                    onPress: () => {
-                                                        this.props.dispatch({
-                                                            type: 'coin/delCoinState',
-                                                            payload: row,
-                                                        })
-                                                    },
-                                                    style: { backgroundColor: 'red', color: 'white' },
-                                                }]}>
-                                                <List.Item key={row.id} extra={`${row.amount} ${detail.symbol}`}
-                                                    onClick={() => dispatch(routerRedux.push({
-                                                        pathname: `${match.url}/state/${row.id}`,
-                                                    }))}
-                                                >
-                                                    {timeFormat("%Y-%m-%d")(new Date(row.created * 1000))}
-                                                </List.Item>
-                                            </SwipeAction>
-                                        ))
-                                    }
-                                    <List.Item>
-                                        <Button type="ghost" size="small" onClick={() => dispatch(routerRedux.push({
-                                            pathname: `${match.url}/state/0`,
-                                        }))}>录入</Button>
-                                    </List.Item>
-                                </List>
+                                <ListTrigger {...{ loading, trigger, dispatch, match }} />
+
+                                <ListState {...{ loading, coinState, detail, dispatch, match }} />
+
                                 <WhiteSpace size="xl" />
                             </div>
                         }
@@ -136,6 +103,7 @@ class Coin extends React.Component {
                 </div>
                 <Switch>
                     <Route path={`${match.url}/state/:id`} component={CoinState} />
+                    <Route path={`${match.url}/trigger`} component={CoinTrigger} />
                 </Switch>
             </div>
         )

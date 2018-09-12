@@ -49,6 +49,11 @@ class App extends React.Component {
         component: () => import('./balance')
     })
 
+    _Triggers = dynamic({
+        app: this.props.dva,
+        component: () => import('./diamond/Triggers')
+    })
+
     componentDidMount() {
         console.log('App did mount');
     }
@@ -120,6 +125,7 @@ class App extends React.Component {
                     <Route exact path="/register" component={this._Register} />
                     <Route path="/coins/:coin_id" component={this._Coin} />
                     <Route path="/balance" component={this._Balance} />
+                    <Route path="/triggers" component={this._Triggers} />
                 </Switch>
             </div>
         );

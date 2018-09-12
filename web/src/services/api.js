@@ -99,3 +99,28 @@ export function set_balance({ id, amount, created }) {
   })
     .catch(handleError);
 }
+
+export function get_triggers() {
+  return request(`/triggers`)
+    .catch(handleError);
+}
+
+export function get_trigger({ coin_id }) {
+  return request(`/trigger/${coin_id}`)
+    .catch(handleError);
+}
+
+export function set_trigger({ coin_id, floor, ceil, status }) {
+  return request(`/trigger/${coin_id}`, {
+    method: 'PUT',
+    json: { floor, ceil, status },
+  })
+    .catch(handleError);
+}
+
+export function del_trigger({ coin_id }) {
+  return request(`/trigger/${coin_id}`, {
+    method: 'DELETE',
+  })
+    .catch(handleError);
+}

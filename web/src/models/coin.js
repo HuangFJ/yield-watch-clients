@@ -1,4 +1,4 @@
-import { coin, get_coin_states, del_coin_state, set_coin_state } from '../services/api';
+import { coin, get_coin_states, del_coin_state, set_coin_state, set_trigger, del_trigger, get_trigger } from '../services/api';
 
 export default {
 
@@ -7,16 +7,18 @@ export default {
     state: {
         detail: {},
         coinState: [],
+        trigger: {}
     },
 
     effects: {
         * query({ payload }, { put, call }) {
             const detail = yield call(coin, payload);
             const coinState = yield call(get_coin_states, payload);
+            const trigger = yield call(get_trigger, payload);
             detail.history = detail.history.map(datum => [datum[0] * 1000, datum[1]]);
             yield put({
                 type: 'updateState',
-                payload: { detail, coinState },
+                payload: { detail, coinState, trigger },
             });
         },
 
@@ -46,6 +48,33 @@ export default {
                 payload: { totalValue: -1, coinList: [] },
             });
         },
+
+        * switchTrigger({ payload }, { put, call }) {
+            const { coin_id, status } = payload
+            const trigger = yield call(set_trigger, { coin_id, status: +status });
+            yield put({
+                type: 'updateState',
+                payload: { trigger },
+            });
+        },
+
+        * setTrigger({ payload }, { put, call }) {
+            const { coin_id, floor, ceil } = payload
+            const trigger = yield call(set_trigger, { coin_id, floor: +floor, ceil: +ceil });
+            yield put({
+                type: 'updateState',
+                payload: { trigger },
+            });
+        },
+
+        * delTrigger({ payload }, { put, call }) {
+            const { coin_id } = payload
+            yield call(del_trigger, { coin_id });
+            yield put({
+                type: 'updateState',
+                payload: { trigger: {} },
+            });
+        }
 
     },
 
