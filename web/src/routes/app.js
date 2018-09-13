@@ -40,7 +40,7 @@ class App extends React.Component {
 
     _Coin = dynamic({
         app: this.props.dva,
-        models: () => [import('../models/coin')],
+        models: () => [import('../models/coin'), import('../models/trigger')],
         component: () => import('./coin')
     })
 
@@ -51,6 +51,7 @@ class App extends React.Component {
 
     _Triggers = dynamic({
         app: this.props.dva,
+        models: () => [import('../models/trigger')],
         component: () => import('./diamond/Triggers')
     })
 

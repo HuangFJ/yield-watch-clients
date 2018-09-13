@@ -1,7 +1,7 @@
 /* global window */
 /* global document */
 import queryString from 'query-string';
-import { me, unauth, my_coins, my_values, coins as coins_api, set_balance, del_balance, get_triggers } from '../services/api';
+import { me, unauth, my_coins, my_values, coins as coins_api, set_balance, del_balance } from '../services/api';
 import { routerRedux } from 'dva/router';
 import { UserNotFound } from '../utils/error';
 import lodash from 'lodash';
@@ -26,7 +26,6 @@ export default {
             coins: [],
             coinsRaw: [],
         },
-        triggers: [],
     },
 
     subscriptions: {
@@ -168,16 +167,6 @@ export default {
             const router = routerRedux.push({ pathname: '/diamond' });
 
             if (needRoute) yield put(router);
-        },
-
-        * queryTriggers(_, { call, put }) {
-            console.log('query triggers data');
-            const triggers = yield call(get_triggers);
-
-            yield put({
-                type: 'updateState',
-                payload: {triggers},
-            });
         },
 
         * logout(_, { call, put }) {

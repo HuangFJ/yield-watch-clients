@@ -39,7 +39,7 @@ class Coin extends React.Component {
     }
 
     render() {
-        const { coin: { detail, coinState, trigger }, history, match, dispatch, loading } = this.props;
+        const { coin: { detail, coinState }, trigger, history, match, dispatch, loading } = this.props;
 
         return (
             <div>
@@ -110,4 +110,4 @@ class Coin extends React.Component {
     }
 }
 
-export default connect(({ coin, loading }) => ({ coin, loading }))(Coin);
+export default connect(({ coin, loading, trigger }) => ({ coin, loading, trigger: trigger.trigger }))(Coin);

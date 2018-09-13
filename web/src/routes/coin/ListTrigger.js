@@ -64,7 +64,7 @@ export default class TriggerList extends React.Component {
                     </Popover>
                 </div>
                 <Icon className={classNames({
-                    [styles.hidden]: !loading.effects['coin/switchTrigger']
+                    [styles.hidden]: !loading.effects['trigger/switchTrigger']
                 })} type="loading" size="xxs" />
             </div>
         )} className={styles.trigger}>
@@ -103,7 +103,7 @@ export default class TriggerList extends React.Component {
                         <Flex.Item style={{ flex: '0 0 auto', minWidth: 60 }}>
                             <AMSwitch name="hi" checked={trigger.status} onClick={(val) => {
                                 this.props.dispatch({
-                                    type: 'coin/switchTrigger',
+                                    type: 'trigger/switchTrigger',
                                     payload: { coin_id: trigger.coin_id, status: val },
                                 })
                             }} />
