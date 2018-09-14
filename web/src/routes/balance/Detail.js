@@ -80,6 +80,7 @@ class Detail extends React.Component {
                             }
                         >日期</InputItem>
                         <InputItem
+                            type="money"
                             placeholder="净入金"
                             value={amount}
                             onChange={amount => this.setState({ amount })}

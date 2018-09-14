@@ -82,7 +82,7 @@ class CoinState extends React.Component {
                             }
                         >日期</InputItem>
                         <InputItem
-                            type="digit"
+                            type="money"
                             placeholder="持币数量"
                             value={amount}
                             onChange={amount => this.setState({ amount })}

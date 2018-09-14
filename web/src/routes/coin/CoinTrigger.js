@@ -90,13 +90,13 @@ class CoinTrigger extends React.Component {
                     </div>
                 )}>
                     <InputItem
-                        type="digit"
+                        type="money"
                         placeholder="最低价格"
                         value={floor}
                         onChange={floor => this.setState({ floor })}
                     >低于￥</InputItem>
                     <InputItem
-                        type="digit"
+                        type="money"
                         placeholder="最高价格"
                         value={ceil}
                         onChange={ceil => this.setState({ ceil })}
