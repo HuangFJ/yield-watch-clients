@@ -86,6 +86,7 @@ class Login extends React.Component {
                     type: 'login/updateState',
                     payload: { disabled: false },
                 });
+                this.handleLogin();
             })
             .catch(_ => this.handleError())
     }
@@ -110,7 +111,7 @@ class Login extends React.Component {
                         <InputItem type="phone" onChange={this.handleMobileChange} placeholder="手机号码" />
                     )}
                     {this.props.form.getFieldDecorator('strCode')(
-                        <InputItem type="number" onChange={this.handleCodeChange} placeholder="短信验证码"
+                        <InputItem type="digit" onChange={this.handleCodeChange} placeholder="短信验证码"
                             extra={
                                 <CountdownButton inline type="ghost" size="small" label="发送短信"
                                     className={styles.sendSmsBtn} interval={login.interval}

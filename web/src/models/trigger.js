@@ -1,5 +1,5 @@
 import { del_trigger, set_trigger, get_triggers, get_trigger } from '../services/api';
-import {routerRedux} from 'dva/router'
+import { routerRedux } from 'dva/router'
 
 export default {
 
@@ -21,7 +21,7 @@ export default {
                 const coin_id = found[1]
                 dispatch({
                     type: 'queryTrigger',
-                    payload: {coin_id}
+                    payload: { coin_id }
                 })
             }
         },
@@ -31,6 +31,7 @@ export default {
     effects: {
         * queryTriggers(_, { call, put }) {
             const triggers = yield call(get_triggers);
+            triggers.sort((a, b) => a.coin.rank - b.coin.rank)
             yield put({
                 type: 'updateState',
                 payload: { triggers },
@@ -75,7 +76,7 @@ export default {
             const triggers = yield select(_ => _.trigger.triggers)
             const index = triggers.findIndex(e => e.coin_id === coin.id)
             if (index >= 0) {
-                delete triggers[index]
+                triggers.splice(index, 1)
             }
             yield put({
                 type: 'updateState',
@@ -83,7 +84,7 @@ export default {
             });
         },
 
-        * triggerDetail({ payload }, {put }) {
+        * triggerDetail({ payload }, { put }) {
             yield put({
                 type: 'updateState',
                 payload: { trigger: payload.trigger },
