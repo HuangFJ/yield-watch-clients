@@ -24,7 +24,7 @@ class Triggers extends React.Component {
     }
 
     render() {
-        const { triggers, history, dispatch, loading, match } = this.props;
+        const { triggers, history, dispatch, loading, match, user } = this.props;
 
         return (
             <div>
@@ -39,7 +39,7 @@ class Triggers extends React.Component {
                     <div className={styles.body}>
                         <List renderHeader={() => (
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <span style={{ flex: 1 }}>实验功能，你可以给每个资产设置一个最低值和最高值，当价格不在这个区间时触发提醒。</span>
+                                <span style={{ flex: 1 }}>实验功能，你可以给资产设置一个范围，当价格超出这个范围时触发提醒。本月可使用提醒 {user.trigger_credit-user.trigger_used}/{user.trigger_credit} 条。</span>
                             </div>
                         )} />
 
@@ -113,4 +113,4 @@ class Triggers extends React.Component {
     }
 }
 
-export default connect(({ trigger, loading }) => ({ triggers: trigger.triggers, loading }))(Triggers);
+export default connect(({ trigger, loading, app }) => ({ triggers: trigger.triggers, loading, user: app.user }))(Triggers);
