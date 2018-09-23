@@ -38,7 +38,7 @@ async function checkStatus(response) {
 
 export default function request(url, options = {}) {
   const accessToken = window.localStorage.getItem('access_token') || null;
-  const urlObj = new URL(API_BASE_URL ? API_BASE_URL + url : url);
+  const urlObj = new URL(API_BASE_URL ? API_BASE_URL + url : url, null, true);
   accessToken && urlObj.set('query', {...urlObj.query, 'access_token': accessToken});
 
   const { json, headers = {}, ...opts } = options;

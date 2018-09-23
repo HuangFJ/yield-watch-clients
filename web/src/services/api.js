@@ -58,8 +58,8 @@ export function coins() {
     .catch(handleError);
 }
 
-export function coin({ coin_id }) {
-  return request(`/coins/${coin_id}`)
+export function coin({ coin_id, unit }) {
+  return request(`/coins/${coin_id}?unit=${unit}`)
     .catch(handleError);
 }
 

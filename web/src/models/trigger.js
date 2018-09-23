@@ -60,13 +60,18 @@ export default {
             });
         },
 
-        * setTrigger({ payload }, { put, call }) {
+        * setTrigger({ payload }, { put, call, select }) {
             const { coin_id, floor, ceil } = payload
             const trigger = yield call(set_trigger, { coin_id, floor: +floor, ceil: +ceil });
             yield put({
                 type: 'updateState',
                 payload: { trigger },
             });
+            const triggers = yield select(_ => _.trigger.triggers)
+            const index = triggers.findIndex(e => e.coin_id === trigger.coin_id)
+            if (index >= 0) {
+                triggers[index] = trigger
+            }
         },
 
         * delTrigger({ payload }, { put, call, select }) {

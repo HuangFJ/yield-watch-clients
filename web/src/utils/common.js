@@ -58,3 +58,14 @@ export function compactInteger(input, decimals = 0) {
 
     return output;
 }
+
+export function percent(value, precise) {
+    return Math.floor(value * 10 ** precise) / 10 ** precise;
+}
+
+export function money(value){
+    if(value>99999999) return compactInteger(value, 2);
+    else{
+        return +((value + '').substring(0, 9));
+    }
+}

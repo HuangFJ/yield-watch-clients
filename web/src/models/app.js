@@ -55,6 +55,7 @@ export default {
         setup({ dispatch }) {
             // when reload the special browser page
             dispatch({ type: 'boot' });
+            window.navigator.serviceWorker.register('/serviceworker.js');
         },
 
     },

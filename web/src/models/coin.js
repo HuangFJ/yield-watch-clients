@@ -50,6 +50,15 @@ export default {
                 payload: { totalValue: -1, coinList: [] },
             });
         },
+
+        * queryCoinByUnit({ payload }, { put, call }){
+            const detail = yield call(coin, payload);
+            detail.history = detail.history.map(datum => [datum[0] * 1000, datum[1]]);
+            yield put({
+                type: 'updateState',
+                payload: { detail },
+            });
+        }
     },
 
     reducers: {

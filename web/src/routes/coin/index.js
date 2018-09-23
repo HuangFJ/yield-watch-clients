@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'dva';
 import { Switch, Route } from 'dva/router';
 import lodash from 'lodash';
-import { NavBar, List, Flex, Icon, WhiteSpace } from 'antd-mobile';
+import { NavBar, List, Flex, Icon, WhiteSpace, Tabs } from 'antd-mobile';
 import { ValueChart } from '../dashboard/components';
-import { compactInteger } from '../../utils/common';
+import { compactInteger, percent, money } from '../../utils/common';
 import styles from '../app.less';
 import CoinState from './CoinState';
 import CoinTrigger from './CoinTrigger';
@@ -12,6 +12,10 @@ import ListState from './ListState';
 import ListTrigger from './ListTrigger';
 
 class Coin extends React.Component {
+
+    state = {
+        activeTab: 2
+    }
 
     _changeColor(val) {
         if (val > 0) {
@@ -59,20 +63,20 @@ class Coin extends React.Component {
                                         <Flex direction="row" className={styles.coinStateGroup} >
                                             <Flex.Item className={styles.coinStateCell}>
                                                 <header>{detail.symbol}价格</header>
-                                                <p className={this._changeColor(detail.percent_change_1h)} style={{ fontSize: 24 }}>
-                                                    ￥{this._fixNumber(detail.price_cny, 6)}
-                                                    <span style={{ fontSize: 12, marginLeft: 5 }}>${this._fixNumber(detail.price_usd, 6)}</span>
+                                                <p className={this._changeColor(detail.percent_change)} style={{ fontSize: 24 }}>
+                                                    ￥{money(detail.price_cny, 6)}
+                                                    <span style={{ fontSize: 12, marginLeft: 5 }}>${money(detail.price_usd, 6)}</span>
                                                 </p>
                                             </Flex.Item>
                                             <Flex.Item style={{ flex: '0 0 auto', width: '25%' }} className={styles.coinStateCell}>
                                                 <header>24H涨跌幅</header>
-                                                <p className={this._changeColor(detail.percent_change_24h)}>{detail.percent_change_24h}%</p>
+                                                <p className={this._changeColor(detail.percent_change)}>{percent(detail.percent_change, 2)}%</p>
                                             </Flex.Item>
                                         </Flex>
                                         <Flex direction="row" className={styles.coinStateGroup}>
                                             <Flex.Item className={styles.coinStateCell}>
-                                                <header>7D涨跌幅</header>
-                                                <p className={this._changeColor(detail.percent_change_7d)}>{detail.percent_change_7d}%</p>
+                                                <header>流通总数</header>
+                                                <p>{compactInteger(detail.available_supply, 2)}</p>
                                             </Flex.Item>
                                             <Flex.Item className={styles.coinStateCell}>
                                                 <header>24H成交量</header>
@@ -88,10 +92,28 @@ class Coin extends React.Component {
                                 
                                 <List renderHeader={() => '价格变化'}>
                                     <List.Item>
-                                        <ValueChart dataValue={detail.history} />
+                                        <Tabs 
+                                        onChange = {(tab, index) =>{
+                                            this.setState({
+                                                activeTab: index
+                                            })
+                                            dispatch({
+                                                type: 'coin/queryCoinByUnit',
+                                                payload: {coin_id:detail.id, unit: tab.unit}
+                                            })
+                                        }}
+                                        tabs={[
+                                            { title: '日' , unit: 'd'},
+                                            { title: '周' , unit: 'w'},
+                                            { title: '月' , unit: 'm'},
+                                            { title: '年' , unit: 'y'},
+                                            { title: '全部' , unit: 'a'},
+                                        ]} renderTabBar={props => <Tabs.DefaultTabBar {...props} page={5} activeTab={this.state.activeTab} />}>
+                                            <ValueChart dataValue={detail.history} />
+                                        </Tabs>
                                     </List.Item>
                                 </List>
-
+                                
                                 <ListTrigger {...{ loading, trigger, dispatch, match }} />
 
                                 <ListState {...{ loading, coinState, detail, dispatch, match }} />

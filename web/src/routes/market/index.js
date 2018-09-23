@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import styles from './index.less';
 import { List, AutoSizer, CellMeasurerCache, CellMeasurer } from 'react-virtualized';
 import classNames from 'classnames';
-import { compactInteger } from '../../utils/common';
+import { compactInteger, percent, money } from '../../utils/common';
 import { List as AMList, SearchBar, Flex } from 'antd-mobile';
 import { routerRedux } from 'dva/router';
 const ListItem = AMList.Item;
@@ -54,8 +54,8 @@ class Market extends React.Component {
                         }))}
                         extra={
                             <div>
-                                {`$${row.price_usd}`}<br />
-                                <span className={this._percentColor(row.percent_change_24h)}>{`${row.percent_change_24h}%`}</span>
+                                {`$${money(row.price_usd)}`}<br />
+                                <span className={this._percentColor(row.percent_change)}>{`${percent(row.percent_change, 2)}%`}</span>
                             </div>
                         }
                         align="top"
