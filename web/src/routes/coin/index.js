@@ -93,7 +93,7 @@ class Coin extends React.Component {
                                 <List renderHeader={() => '价格变化'}>
                                     <List.Item>
                                         <Tabs 
-                                        onChange = {(tab, index) =>{
+                                        onTabClick = {(tab, index)=>{
                                             this.setState({
                                                 activeTab: index
                                             })
