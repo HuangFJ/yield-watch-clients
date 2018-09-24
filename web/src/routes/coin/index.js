@@ -10,12 +10,9 @@ import CoinState from './CoinState';
 import CoinTrigger from './CoinTrigger';
 import ListState from './ListState';
 import ListTrigger from './ListTrigger';
+import * as d3 from 'd3';
 
 class Coin extends React.Component {
-
-    state = {
-        activeTab: 2
-    }
 
     _changeColor(val) {
         if (val > 0) {
@@ -25,9 +22,20 @@ class Coin extends React.Component {
         }
     }
 
-    _fixNumber(val, precision) {
-        const power = 10 ** precision;
-        return Math.floor(val * power) / power;
+    _tabChange = (tab)=>{
+        this.props.dispatch({
+            type: 'coin/queryCoinByUnit',
+            payload: {coin_id:this.props.coin.detail.id, unit: tab.unit}
+        })
+    }
+
+    _datetime = (ts) => {
+        const dt = new Date(ts*1000);
+        if(d3.timeFormat("%y%m%d")(dt) === d3.timeFormat("%y%m%d")(new Date())){
+            return d3.timeFormat("%H:%M")(dt);
+        }else {
+            return d3.timeFormat("%Y-%m-%d %H:%M")(dt);
+        }
     }
 
     componentWillMount() {
@@ -58,7 +66,12 @@ class Coin extends React.Component {
                     <div className={styles.body}>
                         {lodash.isEmpty(detail) ? null :
                             <div>
-                                <List>
+                                <List renderHeader={() => (
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <span style={{ flex: 1 }}></span>
+                                        <span>上次同步：{this._datetime(detail.last_updated)}</span>
+                                    </div>
+                                )}>
                                     <Flex direction="column" style={{ padding: '25px 15px' }}>
                                         <Flex direction="row" className={styles.coinStateGroup} >
                                             <Flex.Item className={styles.coinStateCell}>
@@ -93,22 +106,15 @@ class Coin extends React.Component {
                                 <List renderHeader={() => '价格变化'}>
                                     <List.Item>
                                         <Tabs 
-                                        onTabClick = {(tab, index)=>{
-                                            this.setState({
-                                                activeTab: index
-                                            })
-                                            dispatch({
-                                                type: 'coin/queryCoinByUnit',
-                                                payload: {coin_id:detail.id, unit: tab.unit}
-                                            })
-                                        }}
+                                        initialPage={2}
+                                        onChange={this._tabChange}
                                         tabs={[
                                             { title: '日' , unit: 'd'},
                                             { title: '周' , unit: 'w'},
                                             { title: '月' , unit: 'm'},
                                             { title: '年' , unit: 'y'},
                                             { title: '全部' , unit: 'a'},
-                                        ]} renderTabBar={props => <Tabs.DefaultTabBar {...props} page={5} activeTab={this.state.activeTab} />}>
+                                        ]} renderTabBar={props => <Tabs.DefaultTabBar {...props} />}>
                                             <ValueChart dataValue={detail.history} />
                                         </Tabs>
                                     </List.Item>
