@@ -8,12 +8,8 @@
 - `antd-mobile` components framework 
 - `d3.js` for chart
 
-## dependencies
-`npm install --save react-helmet dva-loading antd-mobile rc-form react-virtualized immutable d3 react-faux-dom`
 
-`npm install --save-dev babel-plugin-import`
-
-## market data
+## market price
 I do not produce data, all of them are from [coinmarketcap](https://coinmarketcap.com).
 
 ## screenshots
