@@ -1,3 +1,8 @@
+## features
+- [x] market price include up to 1000 crypto assets
+- [x] track assets portfolio
+- [x] price alerts via sms
+
 ## stack
 - `dva` for route and state management
 - `antd-mobile` components framework 
